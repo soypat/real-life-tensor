@@ -37,9 +37,9 @@ R(1)=q(h/2)*h/2;
 R(end)=P;
 R=R(2:end);
 K=kG(1:end-1,1:end-1);
-tic
-opts.POSDEF=true;
-U2= linsolve(K,R,opts);
+
+% opts.POSDEF=true;
+% U2= linsolve(K,R,opts);
 U=K\R;
 % upper=chol(K);
 % Uc=(upper\(upper\eye(N-1))')*R;

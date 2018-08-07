@@ -1,0 +1,22 @@
+Rules of Engagement - The FEA races
+
+0. Rules of the game
+
+1. Point system
+
+2. Prizes and punishment (PP)
+
+
+0.  Very simple. Declare your non-structure variables in a short preamble. 
+Before the first calculation, or matrix assembly, declare tic function.
+
+toc must be superceded with an fprintf() function that prints the answer or a plot(),
+function depending on what is the required answer.
+
+1. ---
+
+2. Losers agree to be subject to unusual punishment. This unusual punishment for now is 
+the compulsory use of inclusive language in dialogue (and in monologue, soliloquoys, etc.)
+for the duration of a whole day (24hs).
+
+for example: "The men are angry" translates as "Les hembres estan enojades".
