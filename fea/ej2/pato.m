@@ -8,9 +8,11 @@ E=30e6;
 L=60;%in
 A=2; %in^2
 q=@(x) -10*x; %lb/in
-N=30000;
+N=1000;
 Ne=N-1;
 h=L/Ne;
+k=E/h*A;
+tic
 nodos=[0:h:L];
 elementos=zeros(Ne,2);
 for i=1:Ne
@@ -21,21 +23,37 @@ end
 kG=sparse(N,N);
 
 for i=1:Ne
-    ke=E/h*A;
-    ke=ke*[1 -1;-1 1];
+    
+    ke=k*[1 -1;-1 1];
     kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+ke;
 end
 % CB=zeros(1,N);
-R=z(N,1);
-for i=2:N-1
-    x=h*(i-1)-h/2;
-    R(i)=h/2*(q(x)+q(x+h));
+R=zeros(N,1);
+%Metodo parado sobre elementos
+for i=1:Ne
+    x=(i-1)*h;
+    Atri=h/2*(q(x+h)-q(x));
+    Acuadr=h*q(x);
+    R(i)=R(i)+Acuadr/2+Atri/3;
+    R(i+1)=Acuadr/2+Atri*2/3;
 end
 
+% for i=2:N-1 %Metodos conceptualmente incorrectos.
+% %     Metodo Parado arriba de nodo. Promedio entre entrenodos
+% %     x=h*i;
+% %     R(i)=h/2*(q(x-h/2)+q(x+h/2));
+%     
+% %     Metodo entre-nodos;
+% %     x=h*(i-1)-h/2;
+% %     R(i)=h/2*(q(x)+q(x+h));
+% %     son la misma cosa.
+% end
+
 P=q(L)*L/2;
-R(1)=q(h/2)*h/2;
+% R(1)=q(h/2)*h/4;
 R(end)=P;
-R=R(2:end);
+Rr=R;
+R=R(1:end-1);
 K=kG(1:end-1,1:end-1);
 
 % opts.POSDEF=true;
