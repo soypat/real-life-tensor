@@ -8,7 +8,7 @@ E=30e6;
 L=60;%in
 A=2; %in^2
 q=@(x) -10*x; %lb/in
-N=1000;
+N=10;
 Ne=N-1;
 h=L/Ne;
 k=E/h*A;
@@ -63,9 +63,18 @@ U=K\R;
 % Uc=(upper\(upper\eye(N-1))')*R;
 % U=upper*(upper)
 toc
-plot(nodos(1:Ne),U);
+% plot(nodos(1:Ne),U);
+% 
+% 
+% xlabel('Posicion [in]');
+% ylabel('Desplazamiento [in]')
 
-xlabel('Posicion [in]');
-ylabel('Desplazamiento [in]')
-
-    
+%TENSIONES
+D=zeros(Ne);
+S=zeros(Ne);
+for i=1:Ne-1
+    D(i)=(U(i+1)-U(i))/h;
+    S(i)=E*D(i);
+end
+nod=[h:h:L];
+bar(nod,S,h);
