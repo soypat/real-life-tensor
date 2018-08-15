@@ -31,8 +31,8 @@ if sign(DeltaQ)>=0
     R(mposition2)=R(mposition2)-momsign*(Mcuadr+.6*Mtri);
     return
 else
-    R(uposition1)=R(uposition1)+Acuadr/2+Atri*2/3;
-    R(uposition2)=R(uposition2)+Acuadr/2+Atri/3;
+    R(uposition1)=R(uposition1)+s*(Acuadr/2+Atri*2/3);
+    R(uposition2)=R(uposition2)+s*(Acuadr/2+Atri/3);
     if ndof>2
         R(uposition1+1)=R(uposition1+1)+c*(Acuadr/2+Atri*2/3);
         R(uposition2+1)=R(uposition2+1)+c*(Acuadr/2+Atri/3);

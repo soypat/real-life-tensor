@@ -48,8 +48,8 @@ kG(elementos(4,:),elementos(4,:))=kG(elementos(4,:),elementos(4,:))+k4;
 R=zeros(Ndof,1);
 h=4;
 elemento=1;
-R=qapplyx(q,0,h,1,2,R,ndof);
-R=qapplyx(q,4,h,2,4,R,ndof);
+R=qapply(q,0,nodos,1,2,R,ndof);
+R=qapply(q,4,nodos,2,4,R,ndof);
 
 CB=false(Ndof,1);
 CB([1 2 3])=[true true true];
