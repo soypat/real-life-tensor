@@ -5,7 +5,10 @@ L=sqrt(w^2 +h^2);
 theta=atan(h/w);
 q1=q(x);
 q2=q(x+L);
-q1x=sind(t)
+% s=sin(theta);
+% c=cos(theta);
+% q1x=s*q1;
+% q2x=c*q2;
 
 DeltaQ=q2-q1;
 Atri=L/2*DeltaQ;
@@ -14,6 +17,10 @@ uposition1=nodestart*ndof-(ndof-1);
 uposition2=nodeend*ndof-(ndof-1);
 mposition1=uposition1+ndof-1;
 mposition2=uposition2+ndof-1;
+R(uposition1)=R(uposition1)+Acuadr/2+Atri/3;
+R(uposition2)=R(uposition2)+Acuadr/2+Atri*2/3;
+
+
 if sign(DeltaQ)>=0
         R(uposition1)=R(uposition1)+Acuadr/2+Atri/3;
         R(uposition2)=R(uposition2)+Acuadr/2+Atri*2/3;
