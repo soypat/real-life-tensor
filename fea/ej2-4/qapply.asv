@@ -18,6 +18,8 @@ uposition2=nodeend*ndof-(ndof-1);
 mposition1=uposition1+ndof-1;
 mposition2=uposition2+ndof-1;
 momsign=-sign(w*c*q1+s*q1*h);
+
+
 if sign(DeltaQ)>=0
     R(uposition1)=R(uposition1)+s*(Acuadr/2+Atri/3);
     R(uposition2)=R(uposition2)+s*(Acuadr/2+Atri*2/3);
@@ -26,7 +28,7 @@ if sign(DeltaQ)>=0
         R(uposition2+1)=R(uposition2+1)+c*(Acuadr/2+Atri*2/3);
     end
     Mtri=L^2/12*abs(DeltaQ);
-    Mcuadr=L^2*abs(q1)/24;
+    Mcuadr=L^2*q1/24;
     R(mposition1)=R(mposition1)+momsign*(Mcuadr+.4*Mtri);
     R(mposition2)=R(mposition2)-momsign*(Mcuadr+.6*Mtri);
     return
@@ -38,7 +40,7 @@ else
         R(uposition2+1)=R(uposition2+1)+c*(Acuadr/2+Atri/3);
     end
     Mtri=L^2/12*abs(DeltaQ);
-    Mcuadr=L^2*abs(q2)/24;
+    Mcuadr=L^2*abs(q2/24;
     R(mposition1)=R(mposition1)+momsign*(Mcuadr+.6*Mtri);
     R(mposition2)=R(mposition2)-momsign*(Mcuadr+.4*Mtri);
         return
