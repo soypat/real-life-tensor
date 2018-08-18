@@ -20,12 +20,11 @@ hingotaR=@(E,A,I,L) (3*E*I/L^3)*[A*L^2/(3*I) 0 0 -A*L^2/(3*I) 0 0;
     -A*L^2/(3*I) 0 0 A*L^2/(3*I) 0 0;
     0 -1 0 0 1 -L;
     0 L 0 0 -L L^2];
-P=3200;
+
 E=30e6;
 h_nom=4;%in
 b_nom=3;
-Fa=-P*15/16;
-Fb=-Fa;
+
 elementos=[1 2 3 4 5 6;
     1 2 3 10 11 12;
     7 8 9 10 11 12;
@@ -81,8 +80,8 @@ for i=1:9
         klocalrotada=Kb(E,A,L,phi);
         kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
     elseif i==5
-        klocal=hingota(E,A,I,L);
-        T=Tvu(phid);
+        klocal=hingotaL(E,A,I,L);
+        T=Tvu(phi);
         klocalrotada=T'*klocal*T;
         kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
     else
@@ -113,6 +112,9 @@ CB(elementos(2,3))=true;
 CB(elementos(3,6))=true;
 CB(elementos(3,3))=true;
 
+P=3200;
+Fa=-P*15/16;
+Fb=-Fa;
 R=zeros(Ndof,1);
 R(elementos(1,1:2))=[Fa -P/2];
 R(elementos(2,4:5))=[Fb -P/2];
@@ -142,7 +144,7 @@ for i = 1:length(losKlocos)
     forzas=[forzas flocal];
 end
 
-
+GrafitodoF(L6,L7,L8,forzas{1},forzas{2},forzas{3})
 
 
 % 
