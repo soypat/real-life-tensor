@@ -8,6 +8,17 @@ hingeL=@(E,I,L) (3*E*I/L^3)*[1 L -1 0;
     L L^2 -L 0;
     -1 -L 1 0;
     0 0 0 0];
+hingota=@(E, I, L) (3*E*I/L^3)*[A*L^2/(3*I) 0 0 -A*L^2/(3*I) 0 0;
+    0 1 L 0 -1 0;
+    0 L L^2 0 -L 0;
+    -A*L^2/(3*I) 0 0 A*L^2/(3*I) 0 0;
+    0 -1 -L 0 1 0;
+    0 0 0 0 0 0];
+
+
+
+
+
 viga=@(E,I,L)(E*I/L^3)*[12 6*L -12 6*L;
     6*L 4*L^2 -6*L 2*L^2;
     -12 -6*L 12 -6*L;
@@ -48,4 +59,19 @@ CB(3)=true;
 
 F=R(~CB);
 K=kG(~CB,~CB);
-U=K\F
+U=K\F;
+CBneg=~CB;
+D=zeros(Ndof,1);
+Ucount=0;
+for i=1:length(CB)
+    if CBneg(i)
+        Ucount=Ucount+1;
+        D(i)=U(Ucount);
+    else
+        continue
+    end
+end
+kstress=[]
+ulocal=D(elementos(kstress(i),:));
+
+flocal=klocal*ulocal;
