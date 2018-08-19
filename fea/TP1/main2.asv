@@ -11,8 +11,7 @@ Ee=30e6*ones(Ne,1);
 Ae=8*ones(Ne,1);
 Ie=800*ones(Ne,1);
 Ie(2)=Ie(2)*4;
-Ie(6)=Ie(6)*8;
-Ie(7)=Ie(7)*8;
+Ie(6)=Ie
 P=3200;
 Fa=-P*15/16;
 Fb=-Fa;
@@ -93,7 +92,7 @@ for i = 1:Ne
     forzas=[forzas flocal];
 end
 
-graficapoco(nod,elenod,eletype,Ie);
+graficapoco(nod,elenod,Ie);
 
 
 % function [D]=regendesplazamientos(U,CB)
