@@ -1,45 +1,8 @@
-%Main v2
-%G2D-FEAS
-%General two dimensional Finite Element Analysis Script
-
-%Preparation:
-% enunciado
-enunciado
-ndof=3;
-empotramientos=[];
-%Actual code
-Le=zeros(Ne,1);
-phide=zeros(Ne,1);
-Ndof=N*ndof;
-
-verify(nod,elenod);
-
-for i = 1:Ne
-    nodestart=elenod(i,1);
-    nodeend=elenod(i,2);
-    lx=nod(nodeend,1)-nod(nodestart,1);
-    ly=nod(nodeend,2)-nod(nodestart,2);
-    Le(i)=sqrt(lx^2+ly^2);
-    phide(i)=atan2d(ly,lx);%angulo en degrees
-end
-
 kG=zeros(Ndof);
-losklocales={};
-loskrotados={};
-
-try %Generacón del vector CB. Asegura correcta generación si el usuario tira fruta
-    [a, b]=size(CB);
-    if (a==1 && b==Ndof)
-        CB=CB';
-    elseif (a~=Ndof || ~islogical(CB))
-        warning('Condiciones de borde no tienen tamaño requerido o no es matriz logica. Usar false().\nImponiendo condiciones de borde sugeridas...')
-        CB=false(Ndof,1);
-    end
-catch e
-    warning('Imponiendo condiciones de borde sugeridas debido a error relacionado con condiciones de borde...\nMensaje:%s',e.message)
-    CB=false(Ndof,1);
+for i=1:Ne
+    I
+    
 end
-
 for i=1:Ne %ASSEMBLY
     switch eletype(i)
         case 1
@@ -61,13 +24,6 @@ for i=1:Ne %ASSEMBLY
     end
      kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
      loskrotados=[loskrotados klocalrotada];%Guardo cada krotado
-end
-
-
-
-for i=1:length(apoyos_simples)
-    n=apoyos_simples(i);
-    CB([n*ndof-2 n*ndof-1])=true;
 end
 
 Kr=kG(~CB,~CB);
@@ -93,6 +49,3 @@ try
     end
 catch
 end
-
-% i=6;
-Calcutodo(Ae(i),Ie(i),ce(i),be(i),Ee(i),forzas{i});

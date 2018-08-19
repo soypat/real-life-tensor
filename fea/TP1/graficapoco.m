@@ -2,6 +2,10 @@ function [] = graficapoco(nod,elenod,eletype,Ie)
 clf
 Imax=max(Ie);
 Imin=min(Ie);
+if Imax==Imin
+    Imax=Imax+100;
+    Imin=Imin-20;
+end
 thickness=@(i) (4/(Imax-Imin))*i+(1-4*Imin/(Imax-Imin));
 [Ne,~]=size(elenod);
 hinges=zeros(sum(ismember(eletype,3))+sum(ismember(eletype,4)),2);
