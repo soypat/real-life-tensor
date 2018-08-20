@@ -1,4 +1,4 @@
-function [sig,tau] = getvigatensions(b,h,phi,Fv)
+function [sig,tau,N,M] = getvigatensions(b,h,phi,Fv)
 %GETVIGATENSIONS devuelve tensiones maximas para unaviga
 s=sind(-phi);
 c=cosd(-phi);

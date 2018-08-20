@@ -4,16 +4,19 @@
 
 %Preparation:
 % enunciado
+clear all 
 enunciado
+% test
 ndof=3;
 empotramientos=[];
 %Actual code
 Le=zeros(Ne,1);
 phide=zeros(Ne,1);
 Ndof=N*ndof;
-
+T0b=[1 0;0 0;0 1;0 0];
 verify(nod,elenod);
-
+sigmas=zeros(Ne,1);
+taus=zeros(Ne,1);
 for i = 1:Ne
     nodestart=elenod(i,1);
     nodeend=elenod(i,2);
@@ -43,13 +46,21 @@ end
 for i=1:Ne %ASSEMBLY
     switch eletype(i)
         case 1
-            klocalrotada=Kb(Ee(i),Ae(i),Le(i),phide(i));
+            kbarra=Kb(Ee(i),Ae(i),Le(i));
+            klocal=zeros(6);
+            kbarra6=T0b*kbarra*T0b';
+            klocal([1 2 4 5],[1 2 4 5])=kbarra6;
+            T=Tbu(phide(i));
+            kbarrarotada=T*kbarra*T';
+            klocalrotada=zeros(6);
+            klocalrotada([1 2 4 5],[1 2 4 5])=kbarrarotada;
             CB(elementos(i,ndof))=true;
             CB(elementos(i,2*ndof))=true;
         case 2
             klocal=Kv(Ee(i),Ae(i),Ie(i),Le(i));
             T=Tvu(phide(i));
             klocalrotada=T'*klocal*T;
+            
         case 3
             klocal=vigabisagrada(Ee(i),Ae(i),Ie(i),Le(i),1);
             T=Tvu(phide(i));
@@ -61,6 +72,7 @@ for i=1:Ne %ASSEMBLY
     end
      kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
      loskrotados=[loskrotados klocalrotada];%Guardo cada krotado
+     losklocales=[losklocales klocal];
 end
 
 
@@ -77,12 +89,30 @@ U=Kr\F; %OBTUVE DESPLAZANIETOS
 D=regendesplazamientos(U,CB);
 
 
+
 forzas={}; %Genero estructura con fuerzas sobre cada elemento
+dangerzone=zeros(2,Ne);
 for i = 1:Ne
     klocal=loskrotados{i};
     ulocal=D(elementos(i,:));
+    T=Tvu(phide(i));
     flocal=klocal*ulocal;
     forzas=[forzas flocal];
+    if eletype(i)>1
+        [sig, tau, N, M]=getvigatensions(be(i),he(i),phide(i),flocal);
+    else
+        [sig, N]=getbartensions(be(i),phide(i),flocal);
+        tau=0;
+        M=0;
+    end
+    if N<0
+        Pcrit=pi^2*Ee(i)*Ie(i)/Le(i)^2;
+    else
+        Pcrit=NaN;
+    end
+    sigmas(i)=sig;
+    taus(i)=tau;
+    dangerzone([1,2],i)=[sig/Sye(i)*safetyfactor;-N/Pcrit*safetyfactor];
 end
 % GrafitodoF(Le(6),Le(7),Le(8),forzas{6},forzas{7},forzas{8});
 graficapoco(nod,elenod,eletype,Ie);
@@ -95,4 +125,5 @@ catch
 end
 
 % i=6;
-Calcutodo(Ae(i),Ie(i),ce(i),be(i),Ee(i),forzas{i});
+% Calcutodo(Ae(i),Ie(i),ce(i),be(i),Ee(i),forzas{i});
+disp([1:Ne;dangerzone])

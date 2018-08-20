@@ -32,6 +32,11 @@ for i=1:Ne %Generación de vectores [y1 y2] para plot
     Fv=Fcell{i};
     Fv([1 2 4 5])=[Fv(1)*c-Fv(2)*s;c*Fv(2)+s*Fv(1);Fv(4)*c-Fv(5)*s;c*Fv(5)+s*Fv(4)];
     %creación vectores
+    for j=1:6
+        if abs(Fv(j))<1e-9
+            Fv(j)=0;
+        end
+    end
     N([i*2-1; i*2])=[-Fv(1),Fv(4)];
     V([i*2-1; i*2])=[Fv(2),-Fv(5)];
     M([i*2-1; i*2])=[-Fv(3),Fv(6)];

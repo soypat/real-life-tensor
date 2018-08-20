@@ -6,7 +6,7 @@ clear all
 %4=viga con bisagra al final
 ndof=3;
 
-nod=[0 0;1 1;0 2];
+nod=[0 0;1 1;2 2];
 elenod=[1 2;2 3];
 eletype=[2 2];
 apoyos_simples=[1 3];
@@ -27,9 +27,21 @@ R=fuerzapuntual(R,2,1e4,-1e4,0);
 
 %Datos Materiales
 Ee=30e6*ones(Ne,1);%Modulo young psi
-Ae=8*ones(Ne,1);
-ce=4*ones(Ne,1);
-be=4*ones(Ne,1);
-Ie=800*ones(Ne,1);
 Sye=50e3*ones(Ne,1); %limite de fluencia en psi
 vigasinteresantes=[1,2];
+
+safetyfactor=2;
+he=8*ones(Ne,1);
+be=1*ones(Ne,1);
+% for i=1:Ne
+%     if eletype(i)==1
+%         Ae(i)=be(i)^2*pi/4;
+%         Ie(i)=be(i)^4*pi/(64);
+%     else
+%         Ae(i)=be(i)*he(i);
+%         Ie(i)=(be(i)*he(i)^3)/12;
+%     end
+% end
+Ie=11.3*ones(Ne,1);
+Ae=3.83*ones(Ne,1);
+
