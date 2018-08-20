@@ -1,4 +1,4 @@
-clear all
+
 %Types
 %1=barra
 %2=viga comun
@@ -23,13 +23,16 @@ Fb=-Fa;
 R=zeros(Ndof,1);
 R(elementos(1,1:2))=[Fa -P/2];
 R(elementos(2,4:5))=[Fb -P/2];
-
+Sye=50e3*ones(Ne,1); %limite de fluencia en psi
 %Datos Materiales
 Ee=30e6*ones(Ne,1);
 Ae=8*ones(Ne,1);
 ce=4*ones(Ne,1);
-be=4*ones(Ne,1);
+he=ce*2;
+be=1*ones(Ne,1);
 Ie=800*ones(Ne,1);
+%
 Ie(2)=Ie(2)*4;
-Ie(6)=Ie(6)*1;
-Ie(7)=Ie(7)*8;
+Ie(6)=4.890460502746170e-01;
+Ie(7)=9.953628668933730e+00;
+Ie(8)=1.526000776376096e-01;

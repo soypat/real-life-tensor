@@ -26,10 +26,10 @@ R=fuerzapuntual(R,2,1e4,-1e4,0);
 % R(elementos(2,4:5))=[Fb -P/2];
 
 %Datos Materiales
-Ee=30e6*ones(Ne,1);
+Ee=30e6*ones(Ne,1);%Modulo young psi
 Ae=8*ones(Ne,1);
 ce=4*ones(Ne,1);
 be=4*ones(Ne,1);
 Ie=800*ones(Ne,1);
-
+Sye=50e3*ones(Ne,1); %limite de fluencia en psi
 vigasinteresantes=[1,2];
