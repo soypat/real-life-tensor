@@ -6,6 +6,7 @@
 % enunciado
 clear all 
 enunciado
+vigasinteresantes=[6:8];
 % test
 ndof=3;
 empotramientos=[];
@@ -89,19 +90,22 @@ U=Kr\F; %OBTUVE DESPLAZANIETOS
 D=regendesplazamientos(U,CB);
 
 
-
+forzasold={};
 forzas={}; %Genero estructura con fuerzas sobre cada elemento
 dangerzone=zeros(2,Ne);
 for i = 1:Ne
-    klocal=loskrotados{i};
+    klocalr=loskrotados{i};
+    klocal=losklocales{i};
     ulocal=D(elementos(i,:));
     T=Tvu(phide(i));
-    flocal=klocal*ulocal;
+    flocalold=klocalr*ulocal;
+    flocal=klocal*T*ulocal;%ROTACION DE FUERZAS A MI SISTEMA ELEMENTO
+    forzasold=[forzasold flocalold];
     forzas=[forzas flocal];
     if eletype(i)>1
-        [sig, tau, N, M]=getvigatensions(be(i),he(i),phide(i),flocal);
+        [sig, tau, N, M]=getvigatensions(be(i),he(i),flocal);
     else
-        [sig, N]=getbartensions(be(i),phide(i),flocal);
+        [sig, N]=getbartensions(be(i),flocal);
         tau=0;
         M=0;
     end
@@ -118,8 +122,8 @@ end
 graficapoco(nod,elenod,eletype,Ie);
 
 try
-    if ~isempty(vigasinteresantes)
-        grafisuficiente(Le(vigasinteresantes),phide(vigasinteresantes),forzas{vigasinteresantes})
+    if ~isempty(vigasinteresantes)      
+        grafisuficiente2(Le(vigasinteresantes),forzas{vigasinteresantes})
     end
 catch
 end

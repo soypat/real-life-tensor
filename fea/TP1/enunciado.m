@@ -9,6 +9,7 @@ nod=[0 0;20 0; 20 -8;0 -16;15 -(15+8);%nodos 1 2 3 4 5
     (20+16) -(8+15+12);(16+20+24) -(6+12+15+8);(20+16+24+6) -(8+15+12+6+24)];
 elenod=[1 2;1 4;3 4;2 3;3 5;4 5;5 6;6 7;6 8];
 eletype=[1 1 1 3 4 3 2 2 1];
+% eletype=[2 2 2 2 2 2 2 2 2];
 ndof=3;
 vigasinteresantes=[6:8];
 elementos=genelementos(elenod);
@@ -29,7 +30,7 @@ Sye=77e3*ones(Ne,1); %limite de fluencia en psi
 safetyfactor=8;
 Ie=zeros(Ne,1);
 Ee=30e6*ones(Ne,1);
-Ee(2)=Ee(2)*6;
+Ee(2)=Ee(2);%*6
 Ae=zeros(Ne,1);
 
 % he=[1 4 1 4 4 ...
