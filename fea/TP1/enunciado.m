@@ -17,6 +17,7 @@ elementos=genelementos(elenod);
 [N,~]=size(nod);
 Ndof=N*ndof;
 CB=false(Ndof,1);
+
 %Fuerzas
 P=3200;
 Fa=-P*15/16;

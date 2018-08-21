@@ -18,6 +18,7 @@ T0b=[1 0;0 0;0 1;0 0];
 verify(nod,elenod);
 sigmas=zeros(Ne,1);
 taus=zeros(Ne,1);
+nudos=zeros(Ndof,1);
 for i = 1:Ne
     nodestart=elenod(i,1);
     nodeend=elenod(i,2);
@@ -25,6 +26,15 @@ for i = 1:Ne
     ly=nod(nodeend,2)-nod(nodestart,2);
     Le(i)=sqrt(lx^2+ly^2);
     phide(i)=atan2d(ly,lx);%angulo en degrees
+    switch eletype(i)
+        case 2
+            nudos(nodestart*ndof)=nudos(nodestart*ndof)+1;
+            nudos(nodeend*ndof)=nudos(nodeend*ndof)+1;
+        case 3
+            nudos(nodeend*ndof)=nudos(nodeend*ndof)+1;
+        case 4
+            nudos(nodestart*ndof)=nudos(nodestart*ndof)+1;
+    end
 end
 
 kG=zeros(Ndof);
@@ -55,13 +65,16 @@ for i=1:Ne %ASSEMBLY
             kbarrarotada=T*kbarra*T';
             klocalrotada=zeros(6);
             klocalrotada([1 2 4 5],[1 2 4 5])=kbarrarotada;
-            CB(elementos(i,ndof))=true;
-            CB(elementos(i,2*ndof))=true;
+            if nudos(elementos(i,ndof))<2
+                CB(elementos(i,ndof))=true;
+            end
+            if nudos(elementos(i,2*ndof))<2
+                CB(elementos(i,2*ndof))=true;
+            end
         case 2
             klocal=Kv(Ee(i),Ae(i),Ie(i),Le(i));
             T=Tvu(phide(i));
             klocalrotada=T'*klocal*T;
-            
         case 3
             klocal=vigabisagrada(Ee(i),Ae(i),Ie(i),Le(i),1);
             T=Tvu(phide(i));
@@ -82,7 +95,8 @@ for i=1:length(apoyos_simples)
     n=apoyos_simples(i);
     CB([n*ndof-2 n*ndof-1])=true;
 end
-
+% CB(6*3)=false;
+% CB(9)=false;
 Kr=kG(~CB,~CB);
 F=R(~CB);
 U=Kr\F; %OBTUVE DESPLAZANIETOS
