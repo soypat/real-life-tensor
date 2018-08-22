@@ -15,7 +15,7 @@ ndof=3;
 elementos=genelementos(elenod);
 [Ne,~]=size(elenod);
 [N,~]=size(nod);
-hinges=length(eletype(eletype>2));
+hinges=
 Ndof=N*ndof+hinges;
 CB=false(Ndof,1);
 

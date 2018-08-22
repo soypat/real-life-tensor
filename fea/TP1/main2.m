@@ -4,16 +4,16 @@
 
 %Preparation:
 % enunciado
-clear all 
 enunciado
-vigasinteresantes=[6:8];
+% vigasinteresantes=[6:8];
 % test
 ndof=3;
 empotramientos=[];
 %Actual code
 Le=zeros(Ne,1);
 phide=zeros(Ne,1);
-Ndof=N*ndof;
+hinges=length(eletype(eletype>2));
+Ndof=N*ndof+hinges;
 T0b=[1 0;0 0;0 1;0 0];
 verify(nod,elenod);
 sigmas=zeros(Ne,1);
@@ -65,10 +65,10 @@ for i=1:Ne %ASSEMBLY
             kbarrarotada=T*kbarra*T';
             klocalrotada=zeros(6);
             klocalrotada([1 2 4 5],[1 2 4 5])=kbarrarotada;
-            if nudos(elementos(i,ndof))<2
+            if nudos(elementos(i,ndof))==0
                 CB(elementos(i,ndof))=true;
             end
-            if nudos(elementos(i,2*ndof))<2
+            if nudos(elementos(i,2*ndof))==0
                 CB(elementos(i,2*ndof))=true;
             end
         case 2
@@ -95,8 +95,8 @@ for i=1:length(apoyos_simples)
     n=apoyos_simples(i);
     CB([n*ndof-2 n*ndof-1])=true;
 end
-% CB(6*3)=false;
-% CB(9)=false;
+
+CB(6)=false;
 Kr=kG(~CB,~CB);
 F=R(~CB);
 U=Kr\F; %OBTUVE DESPLAZANIETOS
@@ -133,10 +133,13 @@ for i = 1:Ne
     dangerzone([1,2],i)=[sig/Sye(i)*safetyfactor;-N/Pcrit*safetyfactor];
 end
 % GrafitodoF(Le(6),Le(7),Le(8),forzas{6},forzas{7},forzas{8});
-graficapoco(nod,elenod,eletype,Ie);
+
 
 try
-    if ~isempty(vigasinteresantes)      
+    if graficar
+        graficapoco(nod,elenod,eletype,Ie);
+    end
+    if ~isempty(vigasinteresantes) && graficar      
         grafisuficiente2(Le(vigasinteresantes),forzas{vigasinteresantes})
     end
 catch
