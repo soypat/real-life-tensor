@@ -11,10 +11,10 @@ elenod=[1 2;1 4;3 4;2 3;3 5;4 5;5 6;6 7;6 8];
 eletype=[1 1 1 2 4 2 2 2 1];
 % eletype=[2 2 2 2 2 2 2 2 2];
 ndof=3;
-
-elementos=genelementos(elenod);
-[Ne,~]=size(elenod);
 [N,~]=size(nod);
+elementos=genelementos(elenod,eletype,nod);
+[Ne,~]=size(elenod);
+
 hinges=length(eletype(eletype>2));
 Ndof=N*ndof+hinges;
 CB=false(Ndof,1);

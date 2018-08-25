@@ -71,18 +71,24 @@ for i=1:Ne %ASSEMBLY
             if nudos(elementos(i,2*ndof))==0
                 CB(elementos(i,2*ndof))=true;
             end
+            kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
         case 2
             klocal=Kv(Ee(i),Ae(i),Ie(i),Le(i));
             T=Tvu(phide(i));
             klocalrotada=T'*klocal*T;
+            kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
         case 3
             klocal=vigabisagrada(Ee(i),Ae(i),Ie(i),Le(i),1);
             T=Tvu(phide(i));
             klocalrotada=T'*klocal*T;
+            kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
+                        
         case 4
-            klocal=vigabisagrada(Ee(i),Ae(i),Ie(i),Le(i),0);
+%             klocal=vigabisagrada(Ee(i),Ae(i),Ie(i),Le(i),0);
+            klocal=Kv(Ee(i),Ae(i),Ie(i),Le(i));
             Tvu(phide(i));
             klocalrotada=T'*klocal*T;
+            kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
     end
      kG(elementos(i,:),elementos(i,:))=kG(elementos(i,:),elementos(i,:))+klocalrotada;
      loskrotados=[loskrotados klocalrotada];%Guardo cada krotado

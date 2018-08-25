@@ -27,12 +27,14 @@ A=b^2;
 Ap=b^2*pi/4;
 I=b^4/12;
 kG=zeros(Ndof);
+
 i=1;
 kbarra=Kb(E,A,Le(i));
 T=Tb(phide(i));
 kbarrarotada=T*kbarra*T';%LAS BARRAS QUEDAN tamaño 4x4
 elementos=[nodeDofs(elenod(i,1),[1 2]) nodeDofs(elenod(i,2),[1 2])];
 kG(elementos,elementos)=kG(elementos,elementos)+kbarrarotada;
+
 i=6;
 barnod=[1 2 4 5];
 kbarra=Kb(E,Ap,Le(i));
