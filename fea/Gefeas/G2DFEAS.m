@@ -1,4 +1,5 @@
 % G2DFEAS
+% Version 2
 % General two dimensional Finite Element Analysis Script
 % Requiere variables cargados
 % Usar unidades CONSISTENTES: [N,mm,Mpa,mm^2,mm^4] [N,m,Pa,m^2,m^4] etc.
@@ -11,8 +12,10 @@
 %       2=viga
 %       3=viga rotulada en su nodo de inicio
 %       4=viga rotulada en su nodo final o destino
+%       11,22,33,44= elemento simetrico (se divide su rigidez por dos)
 %   apoyos_simples=[N1 N5 ... N8] Nodos apoyados en x e y
 %   empotramientos=[] Nodos empotrados
+%   R=[fx1 fy1 mz1 fx2 fy2 mz2 ... ] vector de fuerzas sobre los nodos. Usar función fuerzapuntual() para aplicar cargas.
 % 
 %       MATERIALES:
 %   Ee=[200e9 210e9 ... 200e9] Modulos de young para cada elemento, se sigue el
@@ -31,7 +34,7 @@
 %   graficar=true;  grafica estructura modelada
 %   vigasinteresantes=[4:9] grafica esfuerzos sobre elementos 4 a 9 si
 %   graficar=true.
-% 
+%   showresults=false; No muestra resultados.
 %       RESULTADOS:   
 %   Muestra inmediatamente los resultados de tensiones sobre las barras.
 %   dangerzone:
@@ -46,8 +49,10 @@
 %   
 %   Patricio Whittingslow CC-BY-NC  2018 
 
-%Actual code
 
+%Actual code
+oldpath=path;
+path('func',oldpath);
 verify(nod,elenod);
 userelenod=elenod;
 [nodeDofs,elenod,nudos,Le,phide,Ndof]=gennodedofs(nod,elenod,eletype);
@@ -196,3 +201,4 @@ try
 catch
     disp([1:Ne;dangerzone])
 end
+path(oldpath);
