@@ -31,6 +31,7 @@ Usar unidades CONSISTENTES: [N,mm,Mpa,mm^2,mm^4] [N,m,Pa,m^2,m^4] etc.
   graficar=true;  grafica estructura modelada
   vigasinteresantes=[4:9] grafica esfuerzos sobre elementos 4 a 9 si
   graficar=true.
+  showresults=false; No muestra resultados.
 
       RESULTADOS:   
   Muestra inmediatamente los resultados de tensiones sobre las barras.

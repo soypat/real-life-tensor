@@ -78,8 +78,11 @@ end
 elementos=zeros(Ne,6);
 for i=1:Ne %ASSEMBLY
     switch eletype(i)
-        case 1
+        case {1 , 11}
             klocal=Kb(Ee(i),Ae(i),Le(i));
+            if eletype(i)==11
+                klocal=klocal/2;
+            end
             T=Tbu(phide(i));
             kbarrarotada=T*klocal*T';
             index=[nodeDofs(elenod(i,1),[1 2]) nodeDofs(elenod(i,2),[1 2])];
@@ -95,7 +98,10 @@ for i=1:Ne %ASSEMBLY
                 CB(index(4)+1)=true;
             end
         otherwise
-            klocal=Kv(E,A,I,Le(i));
+            klocal=Kv(Ee(i),Ae(i),Ie(i),Le(i));
+            if eletype(i)>11
+                klocal=klocal/2;
+            end
             T=Tvu(phide(i));
             klocalrotada=T'*klocal*T;
             index=[nodeDofs(elenod(i,1),:) nodeDofs(elenod(i,2),:)];
@@ -178,8 +184,15 @@ try
         grafisuficiente2(Le(vigasinteresantes),forzas{vigasinteresantes})
     end
 catch
+    graficapoco(nod,userelenod,eletype,Ie);
 end
 
 % i=6;
 % Calcutodo(Ae(i),Ie(i),ce(i),be(i),Ee(i),forzas{i});
-disp([1:Ne;dangerzone])
+try
+    if showresults
+        disp([1:Ne;dangerzone])
+    end
+catch
+    disp([1:Ne;dangerzone])
+end

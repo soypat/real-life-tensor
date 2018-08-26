@@ -3,7 +3,7 @@ function [nodeDofs,elenod,nudos,Le,phide,Ndof] = gennodedofs(nod,elenod,eletype)
 ndof=3;
 [Ne,~]=size(elenod);
 [N,~]=size(nod);
-hinges=length(eletype(eletype>2));
+hinges=length(eletype(eletype==4 | eletype==44 | eletype==3 |eletype==33));
 Le=zeros(Ne,1);
 phide=zeros(Ne,1);
 Ndof=N*ndof+hinges;
@@ -28,16 +28,16 @@ for i = 1:Ne
     Le(i)=sqrt(lx^2+ly^2);
     phide(i)=atan2d(ly,lx);%angulo en degrees
     switch eletype(i)
-        case 2
+        case {2,22}
             nudos(nodestart)=nudos(nodestart)+1;
             nudos(nodeend)=nudos(nodeend)+1;
-        case 3
+        case {3,33}
             j=j+1;
             nudos(nodeend)=nudos(nodeend)+1;
             hingedlist(j)=i; 
             elenod(i,1)=N+j;
             nodeDofs(N+j,:)=[nodestart*3-2 nodestart*3-1 N*3+j];
-        case 4
+        case {4,44}
             j=j+1;
             nudos(nodestart)=nudos(nodestart)+1;
             hingedlist(j)=i; 
