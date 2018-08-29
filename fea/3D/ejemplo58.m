@@ -44,4 +44,3 @@ Kr=kG(~CB,~CB);
 U=Kr\R;
 D=zeros(24,1);
 D(~CB)=U;
-
