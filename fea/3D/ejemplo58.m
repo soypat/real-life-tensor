@@ -6,15 +6,15 @@ E=30e3;
 nu=.25;
 L=100;
 A=10;
-nodos=[];
 index=[1 2 3 4 5 6 7 8 9 10 11 12;
-    13 14 15 16 17 18, 7 8 9 10 11 12;
-    19 20 21 22 23 24, 7 8 9 10 11 12];
+       19 20 21 22 23 24, 7 8 9 10 11 12;
+     13 14 15 16 17 18, 7 8 9 10 11 12];
 klocal=Kvuw(E,A,Iz,Iy,K,nu,L);
 
 T1=Tvuw([1 0 0],[0 1 0]);
-T2=Tvuw([0 1 0],[1 0 0]);
-T3=Tvuw([0 0 1],[0 1 0]);
+T2=Tvuw([0 0 -1],[0 1 0]);
+T3=Tvuw([0 1 0],[1 0 0]);
+
 krot1=T1'*klocal*T1;
 krot2=T2'*klocal*T2;
 krot3=T3'*klocal*T3;
@@ -33,14 +33,28 @@ nodo=@(n) [n*6-5 n*6-4 n*6-3 n*6-2 n*6-1 n*6];
 CB(nodo(1))=true;
 CB(nodo(3))=true;
 CB(nodo(4))=true;
-R=zeros(6,1);
-% R(2)=-50;
-XX=false(Ndof,1);
-XX(8)=true;
-CC=~XX;
-XXr=XX(~CB);
-R(4)=1e3;
+R=zeros(6*4,1);
+%Comprobar fuerzas
+% ulocal=U()
+R(nodo(2))=[0 -50 0 -1000 0 0];
+F=R(~CB);
 Kr=kG(~CB,~CB);
-U=Kr\R;
+U=Kr\F;
 D=zeros(24,1);
 D(~CB)=U;
+ulocal=D(nodo(2))
+
+flocal1=klocal*T1*ulocal
+flocal2=klocal*T2*ulocal
+flocal3=klocal*T3*ulocal
+% XX=false(Ndof,1);
+% XX(8)=true;
+% CC=~XX;
+% XXr=XX(~CB);
+% R(4)=1e3;
+% Kr=kG(~CB,~CB);
+% U=Kr\R;
+% D=zeros(24,1);
+% D(~CB)=U;
+
+
