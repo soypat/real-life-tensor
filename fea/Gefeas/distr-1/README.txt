@@ -1,5 +1,5 @@
 G2DFEAS
-Version 2
+Version 3
 General two dimensional Finite Element Analysis Script
 Requiere variables cargados
 Usar unidades CONSISTENTES: [N,mm,Mpa,mm^2,mm^4] [N,m,Pa,m^2,m^4] etc.

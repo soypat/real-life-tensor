@@ -13,6 +13,8 @@ R=fuerzapuntual(R,4,0,-1000,0);%Aplico 1000N en direccion y, sentido negativo
 empotramientos=[];
 
 CB=false(22,1);
+fnod=@(n) [n*3-2 n*3-1 n*3];
+fnodb=@(n) [n*3-2 n*3-1];
 
 E=200e9;%Pa
 a=.04;%m

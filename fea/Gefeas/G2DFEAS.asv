@@ -55,6 +55,7 @@ oldpath=path;
 path('func',oldpath);
 verify(nod,elenod);
 userelenod=elenod;
+N=size(nod,1)*3;
 [nodeDofs,elenod,nudos,Le,phide,Ndof]=gennodedofs(nod,elenod,eletype);
 [Nt,ndof]=size(nodeDofs);
 % Ndof=ndof*Nt;
@@ -72,6 +73,9 @@ try %Generacón del vector CB. Asegura correcta generación si el usuario tira fru
     [a, b]=size(CB);
     if (a==1 && b==Ndof)
         CB=CB';
+    elseif (a==1 && b==N)
+        CBf=false(Ndof,1);
+        CBf(1:N)=CB;
     elseif (a~=Ndof || ~islogical(CB))
         warning('Condiciones de borde no tienen tamaño requerido o no es matriz logica. Usar false().\nImponiendo condiciones de borde sugeridas...')
         CB=false(Ndof,1);
@@ -135,9 +139,19 @@ catch
 end
 
 Kr=kG(~CB,~CB);
-Rfulldof=zeros(Ndof,1);
-Rfulldof(1:length(R))=R;
-F=Rfulldof(~CB);
+if size(nodeDofs,1)~=size(nod,1)
+    Rfulldof=zeros(Ndof,1);
+    x=linspace(1,length(R),length(R));
+    for j=1:length(R)
+        Rfulldof(j)=R(j);
+%     Rfulldof(x)=R;
+    end
+    F=Rfulldof(~CB);
+else
+    F=R(~CB);
+end
+
+
 
 % F=R(~CB);
 U=Kr\F; %OBTUVE DESPLAZANIETOS
