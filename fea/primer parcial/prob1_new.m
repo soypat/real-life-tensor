@@ -148,12 +148,12 @@ CB
 R=zeros(Ndof,1);
 P1=50;  %N y Nm
 P2=100;
-M1=8.333333;
-M2=12.5;
+% M1=8.333333;
+% M2=12.5;
 
 
-R(fnod(5))=[0 -(P1+P2)/2 (M1+M2)/2];%divido las fuerzas equivalently 
-R(fnod(6))=[0 -(P1+P2)/2 (M1+M2)/2];
+R(fnod(5))=[138.9 -(P1+P2)/2 0];%(M1+M2)/2];%divido las fuerzas equivalently 
+R(fnod(6))=[-138.9 -(P1+P2)/2 0];%(M1+M2)/2];
 
 F=R(~CB);
 Kr=kG(~CB,~CB);

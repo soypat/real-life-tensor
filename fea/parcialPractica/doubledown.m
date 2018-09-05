@@ -1,0 +1,56 @@
+nod=[0 0; 1 1;2 1]*1000;
+enod=[1 2;2 3];
+Ne=size(enod,1);
+N=size(nod,1);
+Ts={};
+kcell={};
+Le=zeros(Ne,1);
+b=20;
+h=150;
+d=50;
+fnod=@(n) [n*3-2 n*3-1 n*3];
+fdof=@(n,i) n*3-2+i;
+kG=zeros(N*3);
+Iz=b*h^3/12;
+A=b*h;
+nu=.3;
+phide=zeros(Ne,1);
+for i=1:Ne
+    ns=enod(i,1);
+    ne=enod(i,2);
+    lx=nod(ne,1)-nod(ns,1);
+    ly=nod(ne,2)-nod(ns,2);
+    Le(i)=sqrt(lx^2+ly^2);
+    px=[lx ly]/Le(i);
+    py=[-lx ly]/Le(i);
+    phid=atan2d(ly,lx);
+    c=cosd(phid);
+    s=sind(phid);
+    phi=phid;
+    T=[cosd(phi) sind(phi) 0 0 0 0;
+        -sind(phi) cosd(phi) 0 0 0 0;
+        0 0 1 0 0 0;
+        0 0 0 cosd(phi) sind(phi) 0;
+        0 0 0 -sind(phi) cosd(phi) 0;
+        0 0 0 0 0 1];
+    L=Le(i);
+    I=Iz;
+    k= [A*E/L 0 0 -A*E/L 0 0;
+    0 12*E*I/L^3 6*E*I/L^2 0 -12*E*I/L^3 6*E*I/L^2;
+    0 6*E*I/L^2 4*E*I/L 0 -6*E*I/L^2 2*E*I/L;
+    -A*E/L 0 0 A*E/L 0 0;
+    0 -12*E*I/L^3 -6*E*I/L^2 0 12*E*I/L^3 -6*E*I/L^2;
+    0 6*E*I/L^2 2*E*I/L 0 -6*E*I/L^2 4*E*I/L];
+    krot=T'*k*T;
+    index=[fnod(ns) fnod(ne)];
+    kG(index,index)=kG(index,index)+krot;
+end
+Nd=N*3;
+CB=false(Nd,1);
+CB([fnod(1) fnod(2)])=true;
+Kr=kG(~CB,~CB);
+R=zeros(Nd,1);
+R(fnod(2))=[0 0 ]
+F=R(~CB);
+U=Kr\F;
+
