@@ -46,6 +46,7 @@ ulocal=D(nodo(2))
 
 flocal1=klocal*T1*ulocal
 flocal2=klocal*T2*ulocal
+
 flocal3=klocal*T3*ulocal
 % XX=false(Ndof,1);
 % XX(8)=true;

@@ -80,10 +80,18 @@ D=zeros(N*6,1);
 D(~CB)=U;
 U6=D(fnod(6));
 U3=D(fnod(3));
+ulocal3=[U3; U6];
 Udt3=U3(2);
 Udt6=U6(2);
 d=[fdof(3,2) fdof(6,2)]
 sig3=E*(Udt6-Udt3)/Le(3)+sigt;
 F3=sig3*A;
 
-B=@(x,L) [-1/L -6/L^2+12*x/L^3 -6/L^2+12*x/L^3 ]
+
+%          u         v                 w       t1        t2        t3     
+Bz=@(x,L) [-1/L -6/L^2+12*x/L^3 0 0   0 -4/L+6*x/L^2 ...
+           1/L  6/L^2-12*x/L^3  0 0   0 -2/L+6*x/L^2];
+By=@(x,L) [-1/L 0 -6/L^2+12*x/L^3 0   -4/L+6*x/L^2 0 ...
+           1/L 0 6/L^2-12*x/L^3   0   -2/L+6*x/L^2 0 ];
+kurv=Bz(1,1.5)*ulocal3;
+kurv*E*Iz
