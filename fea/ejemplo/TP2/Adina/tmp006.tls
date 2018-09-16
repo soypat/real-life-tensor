@@ -1,0 +1,101 @@
+
+
+
+ ADINA: AUI version 9.3.1, 27 August 2017:  *** NO HEADING DEFINED ***
+ Licensed from ADINA R&D, Inc.
+ Finite element program ADINA, response range type load-step:
+ Listing for zone WHOLE_MODEL:
+ Element field variables are evaluated using RST interpolation.
+        POINT             STRESS-II
+
+ Time 1.00000E+00
+
+ Element 1 of element group 1
+
+ Int point 1            7.54718E+04
+
+ Element 2 of element group 1
+
+ Int point 1           -6.40000E+04
+
+ Element 3 of element group 1
+
+ Int point 1           -2.00000E+04
+
+ Element 4 of element group 1
+
+ Int point 1            6.70522E+04
+
+ Element 5 of element group 1
+
+ Int point 1            5.84846E+03
+
+ Element 6 of element group 1
+
+ Int point 1           -6.82667E+04
+
+ Element 7 of element group 1
+
+ Int point 1           -1.54667E+04
+
+ Element 8 of element group 1
+
+ Int point 1            6.87979E+04
+
+ Element 9 of element group 1
+
+ Int point 1           -7.32400E+02
+
+ Element 10 of element group 1
+
+ Int point 1           -6.77647E+04
+
+ Element 11 of element group 1
+
+ Int point 1           -1.60000E+04
+
+ Element 12 of element group 1
+
+ Int point 1            6.87979E+04
+
+ Element 13 of element group 1
+
+ Int point 1           -7.32400E+02
+
+ Element 14 of element group 1
+
+ Int point 1           -6.77647E+04
+
+ Element 15 of element group 1
+
+ Int point 1           -1.54667E+04
+
+ Element 16 of element group 1
+
+ Int point 1            6.70522E+04
+
+ Element 17 of element group 1
+
+ Int point 1            5.84846E+03
+
+ Element 18 of element group 1
+
+ Int point 1           -6.82667E+04
+
+ Element 19 of element group 1
+
+ Int point 1           -2.00000E+04
+
+ Element 20 of element group 1
+
+ Int point 1            7.54718E+04
+
+ Element 21 of element group 1
+
+ Int point 1           -6.40000E+04
+
+
+
+ *** End of list.
+
+

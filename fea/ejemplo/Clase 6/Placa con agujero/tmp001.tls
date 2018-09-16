@@ -1,0 +1,25 @@
+
+
+
+ ADINA: AUI version 9.3.1, 16 September 2017:  *** NO HEADING DEFINED ***
+ Licensed from ADINA R&D, Inc.
+ Finite element program ADINA, response DEFAULT (type load-step):
+ Listing for zone WHOLE_MODEL:
+      POINT       1-DISPLACEMENT  2-DISPLACEMENT
+
+ Time 1.00000E+00
+
+ Node 1            0.00000E+00     0.00000E+00
+ Node 2           -2.38233E-05    -8.92181E-05
+ Node 3            7.87885E-06     0.00000E+00
+ Node 4            1.01418E-05    -7.77692E-06
+ Node 5           -9.60279E-06    -6.44021E-05
+ Node 6           -3.47085E-06    -1.38552E-04
+ Node 7            0.00000E+00     0.00000E+00
+ Node 8            5.06205E-05    -5.53726E-05
+ Node 9            9.74687E-05    -2.76017E-04
+
+
+ *** End of list.
+
+
