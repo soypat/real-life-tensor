@@ -1,1 +1,0 @@
-Los códigos C2_5 y TP1_ciclo son los que se usaron para terminar el trabajo práctico y fueron hechos por uno de los miembros del grupo. Los códigos C5Barras y C5Vigas se usaron para estudiar el caso, hechos por el otro integrante.
