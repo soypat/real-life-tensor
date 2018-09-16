@@ -13,7 +13,8 @@ A=b*h;
 
     
     %BARRA
-    
+
+       
 
 nod=[0 0;0 .2;.2 .2+.15;.4 .2+.15+.15;.2+.2+.1 .2+.15+.15+.15/2;.2+.2+.1, .2+.15+.15/2;
     .2+.15 .2;.4 -.1;.2 .2];
@@ -33,6 +34,21 @@ Ndof=N*3+1;%3 grados libertad para todos, despues los desaparezco con CB
 IN=zeros(Ne,6);%es la matriz elementos
 kG=zeros(Ndof);
 Ts={};
+Te={};
+klocs={};
+longe=zeros(Ne,1);
+c=zeros(Ne,1);
+s=zeros(Ne,1);
+   for i=1:Ne
+       vec=nod(enod(i,2),:)-nod(enod(i,1),:);
+       longe(i)=norm(vec);
+       vec=vec/longe(i);
+       
+       s=vec(1);
+       c=vec(2);
+       Te{i}=[c s 0 0 0 0;-s c 0 0 0 0;0 0 1 0 0 0;0 0 0 c s 0;0 0 0 -s c 0;0 0 0 0 0 1];
+    
+   end
 for i=1:Ne
     ns=enod(i,1);
     ne=enod(i,2);
@@ -45,7 +61,7 @@ for i=1:Ne
     T=[c s 0 0 0 0;-s c 0 0 0 0;0 0 1 0 0 0;0 0 0 c s 0;0 0 0 -s c 0;0 0 0 0 0 1];
     Tb=[c 0;s 0;0 c;0 s];
     Ts=[Ts T];
-    klocs={};
+    
     switch eletype(i)
         case 2
             Iz=b*h^3/12; %VIGA

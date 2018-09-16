@@ -5,7 +5,7 @@ nod=[0 0 0;-500  0 -866.03;500 0 -866.03;-500 1500 -866.03;%nod4
 enod=[1 5;2 4;3 6;4 6;4 5;6 5;4 7;6 7;5 7];
 Ne=size(enod,1);
 N=size(nod,1);
-% scatter3(nod(:,1),nod(:,2),nod(:,3))
+scatter3(nod(:,1),nod(:,2),nod(:,3))
 % for i=1:Ne
 %     hold on
 %     plot3()
