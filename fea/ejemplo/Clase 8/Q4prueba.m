@@ -152,19 +152,3 @@ meshplot(elem,nod,'r')
 hold on
 nodfinal = nod+reshape(D,dofpornodo,nnod)';
 meshplot(elem,nodfinal,'b')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
