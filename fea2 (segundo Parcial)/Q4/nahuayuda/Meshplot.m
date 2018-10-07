@@ -43,7 +43,6 @@ if verbatim
     end
     
     for e=1:size(elementos,1)
-%         fprintf('%f\n',e)
         text(mean(nodos(elementos(e,:),1)),mean(nodos(elementos(e,:),2)),num2str(e),'FontSize',12,'Color','b')
     end
 end
