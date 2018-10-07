@@ -6,9 +6,9 @@ TestType = 'Sigma_y' ; % 'Sigma_y' ; % 'Sigma_x' ; %
 eleType = 'Q8';% 'Q4', 'Q9'
 escala=1; %Escala desplazamientos
 % Discretizacion
-aux=load('Q8elements.txt');
+aux=load('TPele.txt');
 elementos=aux(:,2:9);%porque es Q4
-aux=load('Q8nodes.txt');
+aux=load('TPnod.txt');
 nodos=aux(:,2:3);
 % elementos=[1 5 9 8;
 %     5 2 6 9;
@@ -128,48 +128,46 @@ wallnodes=[19 14;
             3 10;
             7 13;
             1 9];
-=[nodos(wallnodes(:,1),2) nodos(wallnodes(:,2),2)];
-Lwall=abs(diff(aux));
-Nwall=size(Lwall,1);
+wnodespos=[nodos(wallnodes(:,1),2) nodos(wallnodes(:,2),2)];
+Lwall=abs(diff(wnodespos));
+Nwall=size(wallnodes,1);
 Nq8=[4 2 -1;2 16 2;-1 2 4];
 Fv=@(qv,L) L/15*Nq8*qv;
 
 for iele=1:Nwall
-    pos=0;
-    qv=[q(pos); q(pos); q(pos)];
-    if iele==1
-        Ll=Lwall(iele,1);
-        Lr=Lwall(iele,2);
-        R(wallnodes(iele,1),1)=-Ll/2*q1;
-        R(wallnodes(iele,2),1)=Lr/2*q1;
-        R(wallnodes(iele+1,1),1)=-Ll/2*q1;
-        R(wallnodes(iele+1,2),1)=Lr/2*q1;
-    elseif iele~=Nwall
-        Ll=Lwall(iele,1);
-        Lr=Lwall(iele,2);
-
-    else
-        Ll=Lwall(iele,1);
-        Lr=Lwall(iele,2);
+    if strcmp(eleType,'Q8') && iele<=(Nwall-1)/2 %para que no salga de indice
+        index=[iele*2-1 iele*2 iele*2+1];
+        pos=[wnodespos(index,1) wnodespos(index,2)];
+        qv=[q1(pos(1,1)) q1(pos(1,2)); q1(pos(2,1)) q1(pos(2,2));q1(pos(3,1)) q1(pos(3,2))];
+        rvl=(Lwall(iele*2,1)/15)*Nq8*qv(:,1);
+        rvr=(Lwall(iele*2,2)/15)*Nq8*qv(:,2);
+        R(wallnodes(iele*2-1,1),1)=R(wallnodes(iele*2-1,1),1)-rvl(1);
+        R(wallnodes(iele*2,1),1)=R(wallnodes(iele*2,1),1)-rvl(2);
+        R(wallnodes(iele*2+1,1),1)=R(wallnodes(iele*2+1,1),1)-rvl(3);
+        %   ---- Cargas derecha
+        R(wallnodes(iele*2-1,2),1)=R(wallnodes(iele*2-1,2),1)+rvr(1);
+        R(wallnodes(iele*2,2),1)=R(wallnodes(iele*2,2),1)+rvr(2);
+        R(wallnodes(iele*2+1,2),1)=R(wallnodes(iele*2+1,2),1)+rvr(3);
 
     end
-        
+    %No esta definido para otro tipo de elemento que no sea Q8
 end
-for iele=1:nel
-    nodesNum = elementos(iele,:);
-    nodesEle = nodos(nodesNum,:);
-    %cargas derecha
-    if  max(nodesEle(:,1)) == 1
-        L = abs(nodesEle(3,2)-nodesEle(2,2));
-        Flat=L/6*[2 1;1 2]*[q1 q1]';
-        R(nodesNum([2 3]),1)=R(nodesNum([2 3]),1)+Flat;
-% %     cargas izquierda
-    elseif min(nodesEle(:,1)) == 0 
-        L = abs(nodesEle(4,2)-nodesEle(1,2));
-        Flat=L/6*[2 1;1 2]*[-q1 -q1]';
-        R(nodesNum([1 4]),1)=R(nodesNum([1 4]),1)+Flat;
-    end
-end
+q1=.5;
+% for iele=1:nel
+%     nodesNum = elementos(iele,:);
+%     nodesEle = nodos(nodesNum,:);
+%     %cargas derecha
+%     if  max(nodesEle(:,1)) == 1
+%         L = abs(nodesEle(3,2)-nodesEle(2,2));
+%         Flat=L/6*[2 1;1 2]*[q1 q1]';
+%         R(nodesNum([2 3]),1)=R(nodesNum([2 3]),1)+Flat;
+% % %     cargas izquierda
+%     elseif min(nodesEle(:,1)) == 0 
+%         L = abs(nodesEle(4,2)-nodesEle(1,2));
+%         Flat=L/6*[2 1;1 2]*[-q1 -q1]';
+%         R(nodesNum([1 4]),1)=R(nodesNum([1 4]),1)+Flat;
+%     end
+% end
 
 % Reduccion Matriz
 isFixed = reshape(bc',[],1);
