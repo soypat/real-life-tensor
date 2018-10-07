@@ -10,6 +10,11 @@ aux=load('TPele.txt');
 elementos=aux(:,2:9);%porque es Q4
 aux=load('TPnod.txt');
 nodos=aux(:,2:3);
+nodenumbering=aux(:,1);
+nodxs=zeros(max(nodenumbering),2);
+for i=1:size(nodxs,1)
+    nodxs(nodenumbering(),[1 2])
+end
 % elementos=[1 5 9 8;
 %     5 2 6 9;
 %     9 6 3 7;
