@@ -55,9 +55,10 @@ jmin = 1E10;
 int = zeros(nDofTot);
 Areas=zeros(nel,1);
 for iele = 1:nel
+
+    
     nodesEle = nodos(elementos(iele,:),:);
     %Mecánicas
-    Ke = zeros(nDofNod*nNodEle);
     eleDofs = node2dof(elementos(iele,:),nDofNod);
     eleDofs = reshape(eleDofs',[],1);
     %Térmicas

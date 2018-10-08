@@ -14,7 +14,7 @@ N=[N1s N2s N3s N4s]; %Una fila de matriz de funciones de forma asi puedo derivar
 B=[diff(N,x);diff(N,y)];
 C=[25 0;0 25]; %25 W/mk isotropo
 k=int(int(B'*C*B,x,-a,a),y,-b,b )
-eig(k) % esta es lo que debería dar! Si!
+eig(k) % 
 %% Comenzamos a buscar la solucion a problema elementos finitos
 %Desconocidos
 x=[]; %nodos desconocidos
