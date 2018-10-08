@@ -16,7 +16,7 @@ for i=1:size(nodos,1)
     nodxs(nodenumbering(i),[1 2])=nodos(i,:);
 end
 nodos=nodxs;
-u=0
+u=0;
 
 % elementos=[1 5 9 8;
 %     5 2 6 9;
@@ -160,7 +160,7 @@ for iele=1:Nwall
     end
     %No esta definido para otro tipo de elemento que no sea Q8
 end
-q1=.5;
+
 % for iele=1:nel
 %     nodesNum = elementos(iele,:);
 %     nodesEle = nodos(nodesNum,:);

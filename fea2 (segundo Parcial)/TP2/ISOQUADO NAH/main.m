@@ -1,4 +1,5 @@
 %% Comienza la epica
+escala=.4
 aux=load('TPele.txt');
 elementos=aux(:,2:9);%porque es Q4
 aux=load('TPnod.txt');
@@ -88,13 +89,13 @@ for iele = 1:nel
         eta = upg(ipg,2);
         
         % Funciones de forma respecto de ksi, eta
-        N = shapefuns([ksi eta],eleType);
+        N = shapefuns([ksi eta],'Q8');
         
 %         Nm(1,1:2:7)=N;
 %         Nm(2,2:2:8)=N;
         
         % Derivadas de las funciones de forma respecto de ksi, eta
-        dN = shapefunsder([ksi eta],eleType);
+        dN = shapefunsder([ksi eta],'Q8');
         % Derivadas de x,y, respecto de ksi, eta
         jac = dN*nodesEle;
         % Derivadas de las funciones de forma respecto de x,y.
@@ -118,3 +119,65 @@ for iele = 1:nel
     
     K(eleDofs,eleDofs) = K(eleDofs,eleDofs) + Ke;
 end
+%% Reducción y Resolución
+isFixed = reshape(bc',[],1);
+isFree = ~isFixed;
+
+Rr = reshape(R',[],1);
+
+% Solver
+Dr = K(isFree,isFree)\Rr(isFree);
+
+% Reconstrucción
+D = zeros(nDofTot,1);
+D(isFree) = D(isFree) + Dr;
+
+% Reacciones
+Rv = K(isFixed,isFree)*D(isFree);
+reacciones = nan(nDofTot,1);
+reacciones(isFixed) = Rv;
+reacciones = (reshape(reacciones,nDofNod,[]))';
+
+%% Tensiones y graficos
+ uNod = [-1 -1
+             1 -1
+             1  1
+            -1  1
+             0 -1
+             1  0
+             0  1
+            -1  0
+             0  0];
+stress = zeros(nNodEle,nel,3);
+for iele = 1:nel
+    nodesEle = nodos(elementos(iele,:),:);
+    for inode = 1:nNodEle
+        % Punto de Gauss
+        ksi = uNod(inode,1);
+        eta = uNod(inode,2);
+        % Derivadas de las funciones de forma respecto de ksi, eta
+        dN  = shapefunsder([ksi eta],'Q8');
+        % Derivadas de x,y, respecto d % '2'; % e ksi, eta
+        jac  = dN*nodesEle;
+        % Derivadas de las funciones de forma respecto de x,y.
+        dNxy = jac\dN;          % dNxy = inv(jac)*dN
+        
+        B = zeros(size(C,2),nDofNod*nNodEle);
+        B(1,1:2:nDofNod*nNodEle-1) = dNxy(1,:);
+        B(2,2:2:nDofNod*nNodEle) = dNxy(2,:);
+        B(3,1:2:nDofNod*nNodEle-1) = dNxy(2,:);
+        B(3,2:2:nDofNod*nNodEle) = dNxy(1,:);
+        
+        eleDofs = node2dof(elementos(iele,:),nDofNod);
+        stress(inode,iele,:) = C*B*D(eleDofs);
+    end
+end
+S=1;
+    
+% Configuración deformada
+nodePosition = nodos + escala*(reshape(D,nDofNod,[]))';
+figure(1)
+Meshplot(elementos,nodePosition,bc,'r',0)
+% Gráfico
+figure(2)
+bandplot(elementos,nodePosition,stress(:,:,S)',[],'k');
