@@ -2,7 +2,7 @@ clear
 % clc
 close all
 
-TestType = 'Sigma_y' ; % 'Sigma_y' ; % 'Sigma_x' ; %
+TestType = 'Sigma_x' ; % 'Sigma_y' ; % 'Sigma_x' ; %
 eleType = 'Q8';% 'Q4', 'Q9'
 escala=1; %Escala desplazamientos
 % Discretizacion
