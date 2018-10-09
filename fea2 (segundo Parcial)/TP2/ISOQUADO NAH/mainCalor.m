@@ -111,7 +111,7 @@ for inod=1:size(nodos,1)
         aux=aux+1;
     end
 end
-
+%% Coso donde haces xx cc xc
 % X=[2,3,4,7,8,9];
 Kxx=K(X,X);
 Kxc=K(X,Co);

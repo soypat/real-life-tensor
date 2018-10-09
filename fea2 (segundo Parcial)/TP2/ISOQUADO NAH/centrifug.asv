@@ -27,17 +27,16 @@ end
 
 %HAgo sort de paredzinha
 for i=1:size(paredzinha,1)
-    for j=1:size(paredzinha)-i
+    for j=1:size(paredzinha)+1-i
         aux=paredzinha(j,:);
         aux2=paredzinha(j+1,:);
-        if aux(1)<aux2(1)
-            paredzinha(j+1,:)=aux;
-            paredzinha(j,:)=aux2;
-            continue
+        if aux(1)>aux2(1)
+            paredzinha(j,:)=aux;
+            paredzinha(i,:)=aux2;
+            cont
         end
     end
 end
-wallnodes=paredzinha(:,2);
 % if paredzinha(1,1)>paredzinha(2,1)
 %     aux=paredzinha(1,:);
 %     paredzinha(1,:)=paredzinha(2,:);

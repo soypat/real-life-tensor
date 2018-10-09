@@ -1,5 +1,5 @@
 %% Comienza la epica
-n=100;
+n=20; %vueltas por segundo
 omega=2*pi*n;
 %Se define el omega de rotación arriba
 escala=1;
@@ -7,14 +7,15 @@ aux=load('TPele.txt');
 elementos=aux(:,2:9);%porque es Q8
 aux=load('TPnod.txt');
 nodos=aux(:,2:3); %mm
-nodenumbering=aux(:,1);
-nodxs=-1*ones(max(nodenumbering),2); %Creo una nueva matriz que tiene los nodos en la fila correspondiente a su numero asignado
-for i=1:size(nodos,1)
-    nodxs(nodenumbering(i),[1 2])=nodos(i,:); %Tengo que hacer esto porque Mati o quien sea programo esta porqueria para que tome los nodos segun su linea. Parece a proposito este engendro de paradigma de programacion, seguro lo es.
-end
-fakeNodeNumber=max(nodenumbering);
-fNN=fakeNodeNumber;
-nodos=nodxs; %Finalmente asigno la matriz nodos
+numeracion=aux(:,1);
+[nodos, elementos]=nodekill(nodos,numeracion,elementos);
+% nodxs=-1*ones(max(nodenumbering),2); %Creo una nueva matriz que tiene los nodos en la fila correspondiente a su numero asignado
+% for i=1:size(nodos,1)
+%     nodxs(nodenumbering(i),[1 2])=nodos(i,:); %Tengo que hacer esto porque Mati o quien sea programo esta porqueria para que tome los nodos segun su linea. Parece a proposito este engendro de paradigma de programacion, seguro lo es.
+% end
+% fakeNodeNumber=max(nodenumbering);
+% fNN=fakeNodeNumber;
+% nodos=nodxs; %Finalmente asigno la matriz nodos
 % Seguro podria hacer el programa de cero, pero para que? No quiero
 % aprender.
 ticStart=tic;
@@ -61,9 +62,9 @@ for iele = 1:nel
     eleDofs = node2dof(elementos(iele,:),nDofNod);
     eleDofs = reshape(eleDofs',[],1);
     %Térmicas
-    KTe= zeros(1*nNodEle);
-    eleDofsT=node2dof(elementos(iele,:),1);
-    eleDofsT=reshape(eleDofsT',[],1);
+%     KTe= zeros(1*nNodEle);
+%     eleDofsT=node2dof(elementos(iele,:),1);
+%     eleDofsT=reshape(eleDofsT',[],1);
     for ipg = 1:npg
         % Punto de Gauss
         ksi = upg(ipg,1);
@@ -81,10 +82,10 @@ for iele = 1:nel
         jac = dN*nodesEle;
         % Derivadas de las funciones de forma respecto de x,y.
         dNxy = jac\dN;          % dNxy = inv(jac)*dN
-        %Térmica
-        BT = zeros(2,4);
-        BT(1,:) = dNxy(1,:);
-        BT(2,:) = dNxy(2,:);
+%         %Térmica
+%         BT = zeros(2,4);
+%         BT(1,:) = dNxy(1,:);
+%         BT(2,:) = dNxy(2,:);
         %Mecánica
         B = zeros(size(C,2),nDofNod*nNodEle);
         B(1,1:2:nDofNod*nNodEle-1) = dNxy(1,:);
@@ -97,7 +98,7 @@ for iele = 1:nel
         %Mecánica
         Ke = Ke + B'*C*B*wpg(ipg)*Djac;
         %Térmica
-        KTe = KTe + BT'*Ct*BT*wpg(ipg)*Djac;
+%         KTe = KTe + BT'*Ct*BT*wpg(ipg)*Djac;
         
         A = A + wpg(ipg)*Djac;
         %hago la integral me va a servir despues para calcular las fuerzas
@@ -106,7 +107,7 @@ for iele = 1:nel
             jmin = Djac;
         end
     end
-    KT(eleDofsT,eleDofsT)=KT(eleDofsT,eleDofsT)+KTe;
+%     KT(eleDofsT,eleDofsT)=KT(eleDofsT,eleDofsT)+KTe;
     K(eleDofs,eleDofs) = K(eleDofs,eleDofs) + Ke;
 end
 %% Cargas
@@ -119,7 +120,7 @@ centrifug
 % Fuerzas en superficies
 q1 =@(x) -2*(150 - (210-x))/150; %MPa or N/mm^2
 % q2 = @(x) -550000*(1-x/52.5);
-wallnodes=load('loadnod.txt');
+% wallnodes=load('loadnod.txt');
 wnodespos=nodos(wallnodes,2);
 Lwall=diff(wnodespos);
 Nwall=size(wallnodes,1);
