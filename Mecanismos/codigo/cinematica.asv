@@ -208,27 +208,18 @@ ICG5 = 33479.246276; %mm^2
 ICG6 = 15890.378168; %mm^2
 
 syms Ax Ay Bx By O2x O2y O4x O4y
-
 titacg2=0; %medido desde O2
 rcg2=sqrt(40^2 + 61^2)*kari;
-
 titacg3=0; %Medido desde A
 rcg3B=L3/2;
-
-titacg4=0; %Medido desde B
-rcg4=L4/2;
-
-titacg6=27/180*pi;
 rcg6C=sqrt(525^2+84^2)*kari;
-
-
-
+titacg4=0; %Medido desde B
+titacg6=27/180*pi;
+rcg4=L4/2;
     N=length(tita2);
     Rcg2=zeros(N,2);
     Rcg3=zeros(N,2);
     Rcg4=zeros(N,2);
-    Rcg5=zeros(N,2);
-    Rcg6=zeros(N,2);
 %Necesito acceleraciones de los centros de masa
 for i=1:length(tita2)
 
@@ -237,7 +228,6 @@ for i=1:length(tita2)
     [RB4, RO4]=getR(tita4(i),titacg4,rcg4,L4);
     [RC6, RA6]=getR(tita4(i),titacg6,rcg6C,CA);
     Rcg2(i,:)=-RO2;
-    
     Rcg3(i,:)=-RA3+nodA(i,:);
     Rcg4(i,:)=-RB4+nodB(i,:);
 end
