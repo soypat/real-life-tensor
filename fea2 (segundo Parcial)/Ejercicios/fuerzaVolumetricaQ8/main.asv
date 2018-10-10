@@ -3,14 +3,10 @@ Preguntas para Sebas: Como calcular fuerzas volumetricas. Vale usar 4|J|=A?
 Que nos dan para el parcial?
 
 %}
-%% Comienza la epica
-n=20; %vueltas por segundo
-omega=2*pi*n;
-%Se define el omega de rotación arriba
 escala=1;
-aux=load('TPele.txt');
+aux=load('elementosEjemplo.txt');
 elementos=aux(:,2:9);%porque es Q8
-aux=load('TPnod.txt');
+aux=load('nodEjemplo.txt');
 nodos=aux(:,2:3); %mm
 numeracion=aux(:,1);
 [nodos, elementos]=nodekill(nodos,numeracion,elementos);
@@ -25,15 +21,12 @@ numeracion=aux(:,1);
 % aprender.
 ticStart=tic;
 %% Datellis
-E=200e3; %N/mm^2
+E=10; %N/mm^2
 nu=0.3;
 C = (E/(1-nu^2))*[1 nu 0;
                   nu 1 0;
                   0 0 (1-nu)/2]; %Plain Stress
           % tal cual como me lo dieron a mi:
-Ct=17*[1 0;0 1]; %W/mK
-alfa=1.2e-6;
-%Termico
 
 nDofNod = 2;                    % grados de libertad por nodo
 nel = size(elementos,1);         % elementos
@@ -43,11 +36,10 @@ nDofTot = nDofNod*nNod;         % grados de libertad
 nDims = size(nodos,2);          % dimensiones del problema
 %% CB
 bc = false(nNod,nDofNod);       % Matriz de condiciones de borde
-    
-fixity %Aplica las condiciones de bordes en la base. 
+bc([1 3],:)=true;
 %% PLOT
 figure(1)
-myMeshplot(elementos,nodos,bc,'k',1,0) %Eligo si quiero con numeración con el ultimo parametro (1/0)
+myMeshplot(elementos,nodos,bc,'k',1,1) %Eligo si quiero con numeración con el ultimo parametro (1/0)
 
 %% Puntos de Gauss
 rsInt = 3*ones(1,2);
@@ -58,7 +50,7 @@ K = zeros(nDofTot);
 KT = zeros(nDofTot/2);
 A = 0;
 jmin = 1E10;
-int = zeros(nDofTot);
+inti = zeros(nDofTot);
 Areas=zeros(nel,1);
 for iele = 1:nel
     nodesEle = nodos(elementos(iele,:),:);
@@ -87,11 +79,7 @@ for iele = 1:nel
         jac = dN*nodesEle;
         % Derivadas de las funciones de forma respecto de x,y.
         dNxy = jac\dN;          % dNxy = inv(jac)*dN
-%         %Térmica
-%         BT = zeros(2,4);
-%         BT(1,:) = dNxy(1,:);
-%         BT(2,:) = dNxy(2,:);
-        %Mecánica
+
         B = zeros(size(C,2),nDofNod*nNodEle);
         B(1,1:2:nDofNod*nNodEle-1) = dNxy(1,:);
         B(2,2:2:nDofNod*nNodEle) = dNxy(2,:);
@@ -107,12 +95,13 @@ for iele = 1:nel
         
         A = A + wpg(ipg)*Djac;
         %hago la integral me va a servir despues para calcular las fuerzas
-        int(eleDofs,eleDofs)=int(eleDofs,eleDofs)+Nm'*Nm*det(jac);
+%         inti(eleDofs,eleDofs)=inti(eleDofs,eleDofs)+N'*N*det(jac);
         if Djac < jmin
             jmin = Djac;
         end
     end
 %     KT(eleDofsT,eleDofsT)=KT(eleDofsT,eleDofsT)+KTe;
+
     K(eleDofs,eleDofs) = K(eleDofs,eleDofs) + Ke;
 end
 %% Cargas

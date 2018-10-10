@@ -1,4 +1,4 @@
-    t=60;
+    t=1;
     Diametro=280;
     R1=Diametro/2;%mm
     density=7.9e-3;%kg/cm^3
