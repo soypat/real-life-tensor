@@ -1,3 +1,8 @@
+%{
+Preguntas para Sebas: Como calcular fuerzas volumetricas. Vale usar 4|J|=A?
+Que nos dan para el parcial?
+
+%}
 %% Comienza la epica
 n=20; %vueltas por segundo
 omega=2*pi*n;
@@ -38,7 +43,7 @@ nDofTot = nDofNod*nNod;         % grados de libertad
 nDims = size(nodos,2);          % dimensiones del problema
 %% CB
 bc = false(nNod,nDofNod);       % Matriz de condiciones de borde
-
+    
 fixity %Aplica las condiciones de bordes en la base. 
 %% PLOT
 figure(1)
@@ -102,7 +107,7 @@ for iele = 1:nel
         
         A = A + wpg(ipg)*Djac;
         %hago la integral me va a servir despues para calcular las fuerzas
-%         int(eleDofs,eleDofs)=int(eleDofs,eleDofs)+Nm'*Nm*det(jac);
+        int(eleDofs,eleDofs)=int(eleDofs,eleDofs)+Nm'*Nm*det(jac);
         if Djac < jmin
             jmin = Djac;
         end
@@ -128,7 +133,6 @@ Nq8=[4 2 -1;2 16 2;-1 2 4];
 Fv=@(qv,L) L/15*Nq8*qv;
 
 for iele=1:Nwall
-    
     if iele<=(Nwall-1)/2 %para que no salga de indice
         index=[iele*2-1 iele*2 iele*2+1];
         pos=wnodespos(index);

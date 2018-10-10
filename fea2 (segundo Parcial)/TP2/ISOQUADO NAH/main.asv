@@ -1,3 +1,8 @@
+%{
+Preguntas para Sebas: Como calcular fuerzas volumetricas. Vale usar 4|J|=A?
+Que nos dan para el parcial?
+
+%}
 %% Comienza la epica
 n=20; %vueltas por segundo
 omega=2*pi*n;
@@ -8,7 +13,7 @@ elementos=aux(:,2:9);%porque es Q8
 aux=load('TPnod.txt');
 nodos=aux(:,2:3); %mm
 numeracion=aux(:,1);
-[nodos, elementos]=nodekill(nodos,numeracion,elementos)
+[nodos, elementos]=nodekill(nodos,numeracion,elementos);
 % nodxs=-1*ones(max(nodenumbering),2); %Creo una nueva matriz que tiene los nodos en la fila correspondiente a su numero asignado
 % for i=1:size(nodos,1)
 %     nodxs(nodenumbering(i),[1 2])=nodos(i,:); %Tengo que hacer esto porque Mati o quien sea programo esta porqueria para que tome los nodos segun su linea. Parece a proposito este engendro de paradigma de programacion, seguro lo es.
@@ -38,7 +43,7 @@ nDofTot = nDofNod*nNod;         % grados de libertad
 nDims = size(nodos,2);          % dimensiones del problema
 %% CB
 bc = false(nNod,nDofNod);       % Matriz de condiciones de borde
-
+    
 fixity %Aplica las condiciones de bordes en la base. 
 %% PLOT
 figure(1)
@@ -102,7 +107,7 @@ for iele = 1:nel
         
         A = A + wpg(ipg)*Djac;
         %hago la integral me va a servir despues para calcular las fuerzas
-%         int(eleDofs,eleDofs)=int(eleDofs,eleDofs)+Nm'*Nm*det(jac);
+        int(eleDofs,eleDofs)=int(eleDofs,eleDofs)+Nm'*Nm*det(jac);
         if Djac < jmin
             jmin = Djac;
         end
@@ -120,7 +125,7 @@ centrifug
 % Fuerzas en superficies
 q1 =@(x) -2*(150 - (210-x))/150; %MPa or N/mm^2
 % q2 = @(x) -550000*(1-x/52.5);
-wallnodes=load('loadnod.txt');
+% wallnodes=load('loadnod.txt');
 wnodespos=nodos(wallnodes,2);
 Lwall=diff(wnodespos);
 Nwall=size(wallnodes,1);
@@ -128,7 +133,6 @@ Nq8=[4 2 -1;2 16 2;-1 2 4];
 Fv=@(qv,L) L/15*Nq8*qv;
 
 for iele=1:Nwall
-    
     if iele<=(Nwall-1)/2 %para que no salga de indice
         index=[iele*2-1 iele*2 iele*2+1];
         pos=wnodespos(index);
