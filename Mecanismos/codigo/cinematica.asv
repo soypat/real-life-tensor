@@ -203,13 +203,11 @@ tita=[tita1;tita2;tita3;tita4];
 %CAMBIO DE nombre!! tita2 = tita(2,:), accelAngular3= anga(3,:) etc. blabla
 %% Calculo de Fuerzas
 kari=150/sqrt((72+40)^2+(107+61)^2); %Escala Ari
-
 ICG2 = 4580.141916; %mm^2
 ICG3 = 66100.713840; %mm^2
 ICG4 = 15890.378168;%mm^2
 ICG5 = 33479.246276; %mm^2
 ICG6 = 15890.378168; %mm^2
-IG=[0 ICG2 ICG3 ICG4 ICG5 ICG6];
 
 
 
@@ -219,8 +217,8 @@ rcg2=sqrt(40^2 + 61^2)*kari;
 titacg3=0; %Medido desde A
 rcg3B=L3/2;
 
-titacg4=0; %Medido desde O4
-rcg4=(BD+L4)/2;
+titacg4=0; %Medido desde B
+rcg4=(BD+L4)/2;%MAL!
 
 titacg5=titacg3;
 rcg5= L3/2;
@@ -240,13 +238,13 @@ for i=1:length(tita2)
 
     [RO2, RA2]=getR(tita2(i),titacg2,rcg2,L2);
     [RA3, RB3]=getR(tita3(i),titacg3,rcg3B,L3);
-    [RO4, RD4]=getR(tita4(i),titacg4,rcg4,L4+BD);
+    [RB4, RO4]=getR(tita4(i),titacg4,rcg4,L4);
     [RC5, RD5]=getR(tita3(i),titacg5,rcg5,L3);
     [RC6, RA6]=getR(tita4(i)+pi,titacg6,rcg6C,CA);
     
     Rcg2(i,:)=-RO2;
     Rcg3(i,:)=-RA3+nodA(i,:);
-    Rcg4(i,:)=-RO4+nodO4(i,:);
+    Rcg4(i,:)=-RB4+nodO4(i,:);
     Rcg5(i,:)=-RC5+nodC(i,:);
     Rcg6(i,:)=-RC6+nodC(i,:);
 end
@@ -257,9 +255,38 @@ G(4,:)=Rcg4(:,1)+1i*Rcg4(:,2);
 G(5,:)=Rcg5(:,1)+1i*Rcg5(:,2);
 G(6,:)=Rcg6(:,1)+1i*Rcg6(:,2);
 
-vG=loopdiff(G,tau);
-aG=loopdiff(vG,tau);
+vG=loopdiffr(G,ta)
+% aCG2=loopdiff(loopdiff(Rcg2,tau),tau);
+% aCG3=loopdiff(loopdiff(Rcg3,tau),tau);
+% aCG4=loopdiff(loopdiff(Rcg2,tau),tau);
+% aCG5=loopdiff(loopdiff(Rcg5,tau),tau);
+% aCG6=loopdiff(loopdiff(Rcg6,tau),tau);
+%La carga sobre la amasadora va ser P, con Px y Py
+syms A2x A2y A3x A3y A6x A6y Bx By O2x O2y O4x O4y
+for i=2:length(tita2)-1
+    %ECUACIONES PARA BARRAS
+    %Barra2
+    [RO2, RA2]=getR(tita2(i),titacg2,rcg2,L2);
+    [RA3, RB3]=getR(tita3(i),titacg3,rcg3B,L3);
+    [RB4, RO4]=getR(tita4(i),titacg4,rcg4,L4);
+    [RC5, RD5]=getR(tita3(i),titacg5,rcg5,L3);
+    [RC6, RA6]=getR(tita4(i)+pi,titacg6,rcg6C,CA);
+    
+        Px=2;
+        m2=3;
+        T=10;
+%         
+%         Fx2 = A2x+O2x == m2*aCG2(i,1); %Tomo Fuerza en junta A como positiva sobre eslabon2
+%         Fy2 = Ay+O2y == m2*aCG2(i,2);
+%         M2  = 0==T+RO2(1)*O2y-RO2(2)*O2x+RA2(1)*Ay-RA2(2)*Ax;
+%         %T= Torque sobre eslabon. P=omega*T
+%         Fx4=A6x + Cx == m6*aCG6(2,)
+%         M3  = ICG3*anga(3,i)==RA3(1)*(A3y)-RA3(2)*(A3x)+RB3(1)*By-RB3(2)*Bx;
+%         M4  = ICG4*anga(4,i)==RB4(1)*(-By)-RB4(2)*(-Bx)+ RO4(1)*O4y-RO4(2)*O4x
+%         Fx3 = A3x+Bx + Px == Px
 
+    
+end
 
 %% Graph that stuff
 %comment continue to graph
@@ -267,7 +294,7 @@ for j=1:1
     y=tic;
     t=tic;
 for i=1:N
-%     continue
+    continue
     
     while refresh
         pause(.00000001)
@@ -275,15 +302,6 @@ for i=1:N
         refresh=false;
     end
     end
-    
-        [RO2, RA2]=getR(tita2(i),titacg2,rcg2,L2);
-    [RA3, RB3]=getR(tita3(i),titacg3,rcg3B,L3);
-    [RO4, RD4]=getR(tita4(i),titacg4,rcg4,L4+BD);
-    [RC5, RD5]=getR(tita3(i),titacg5,rcg5,L3);
-    [RC6, RA6]=getR(tita4(i)+pi,titacg6,rcg6C,CA);
-    RB4=RD4/2.28872168; %Alargo el vector para que llegue a B
-%         aria=[0 19738 ]
-    RP6=RA6+AX*(RA6-RC6)/norm(RA6-RC6);
     cla
     plot(nodX(:,1),nodX(:,2));
 %     text(600,0,sprintf('N=%0.0f',i))
@@ -303,27 +321,6 @@ for i=1:N
     scatter(Rcg4(i,1),Rcg4(i,2),'+')
     scatter(Rcg6(i,1),Rcg6(i,2),'+')
     scatter(Rcg5(i,1),Rcg5(i,2),'+')
-    %Verificacion posiciones de Rcg
-%     scatter(real(G(2,i))+RO2(1),imag(G(2,i))+RO2(2),'x')
-%     scatter(real(G(2,i))+RA2(1),imag(G(2,i))+RA2(2),'x')
-    
-%     scatter(real(G(3,i))+RA3(1),imag(G(3,i))+RA3(2),'x')
-%     scatter(real(G(3,i))+RB3(1),imag(G(3,i))+RB3(2),'x')
-%     [RO4, RB4]
-%     [RC5, RD5]
-%     [RC6, RA6]
-%     scatter(real(G(4,i))+RO4(1),imag(G(4,i))+RO4(2),'x')
-%     scatter(real(G(4,i))+RB4(1),imag(G(4,i))+RB4(2),'x')
-%     scatter(real(G(4,i))+RD4(1),imag(G(4,i))+RD4(2),'x')
-
-%     scatter(real(G(5,i))+RC5(1),imag(G(5,i))+RC5(2),'x')
-%     scatter(real(G(5,i))+RD5(1),imag(G(5,i))+RD5(2),'x')
-    
-%     scatter(real(G(6,i))+RC6(1),imag(G(6,i))+RC6(2),'x')
-%     scatter(real(G(6,i))+RA6(1),imag(G(6,i))+RA6(2),'x')
-    scatter(real(G(6,i))+RP6(1),imag(G(6,i))+RP6(2),'x')
-    
-
     line([nodO2(i,1) nodA(i,1)],[nodO2(i,2) nodA(i,2)],'Color','k');%ESLABON 2
     line([nodA(i,1) nodB(i,1)],[nodA(i,2) nodB(i,2)],'Color','k'); %ESLABON 3
 %     line([nodB(i,1) nodO4(i,1)],[nodB(i,2) nodO4(i,2)]); %ESLABON 4 (B-O4)
@@ -337,7 +334,6 @@ for i=1:N
     ylabel('Posición y [mm]');
     xlabel('Posición x [mm]')
     t=tic;
-    pause(1)
     refresh=true;
 end
 %     toc(t)
@@ -351,7 +347,7 @@ function [Rcgin, Rcgout] = getR(titaglob,titacg,rin,L)
 end
 
 
-function [newvec] = loopdiff(vec,tau)
+function [newvec] = loopdiffr(vec,tau)
     [~, N] = size(vec);
     newvec=zeros(size(vec));
     for i=1:N
