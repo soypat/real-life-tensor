@@ -17,7 +17,9 @@ L1 = 480.95; %n1 a n4
 L2 = 150;    %n1 a n2
 L3 = 326.64; %n2 a n3
 L4 = 410.86; %n3 a n4
+L5=L3;
 
+BA=L3;
 BD=161;
 AX=186.5*escala;
 N=20;
@@ -207,7 +209,7 @@ ICG4 = 15890.378168;%mm^2
 ICG5 = 33479.246276; %mm^2
 ICG6 = 15890.378168; %mm^2
 
-syms Ax Ay Bx By O2x O2y O4x O4y
+
 
 titacg2=0; %medido desde O2
 rcg2=sqrt(40^2 + 61^2)*kari;
@@ -216,11 +218,13 @@ titacg3=0; %Medido desde A
 rcg3B=L3/2;
 
 titacg4=0; %Medido desde B
-rcg4=L4/2;
+rcg4=(BD+L4)/2;%MAL!
+
+titacg5=titacg3;
+rcg5= L3/2;
 
 titacg6=27/180*pi;
-rcg6C=sqrt(525^2+84^2)*kari;
-
+rcg6C=norm([311 34]);
 
 
     N=length(tita2);
@@ -235,41 +239,54 @@ for i=1:length(tita2)
     [RO2, RA2]=getR(tita2(i),titacg2,rcg2,L2);
     [RA3, RB3]=getR(tita3(i),titacg3,rcg3B,L3);
     [RB4, RO4]=getR(tita4(i),titacg4,rcg4,L4);
-    [RC6, RA6]=getR(tita4(i),titacg6,rcg6C,CA);
-    Rcg2(i,:)=-RO2;
+    [RC5, RD5]=getR(tita3(i),titacg5,rcg5,L3);
+    [RC6, RA6]=getR(tita4(i)+pi,titacg6,rcg6C,CA);
     
+    Rcg2(i,:)=-RO2;
     Rcg3(i,:)=-RA3+nodA(i,:);
-    Rcg4(i,:)=-RB4+nodB(i,:);
+    Rcg4(i,:)=-RB4+nodO4(i,:);
+    Rcg5(i,:)=-RC5+nodC(i,:);
+    Rcg6(i,:)=-RC6+nodC(i,:);
 end
+aCG2=[0 0;diff(Rcg2,2);0 0];
+aCG3=[0 0;diff(Rcg3,2);0 0];
+aCG4=[0 0;diff(Rcg2,2);0 0];
+aCG5=diff(Rcg5,2);
+aCG6=diff(Rcg6,2);
 %La carga sobre la amasadora va ser P, con Px y Py
-for i=1:length(tita2)
+syms A2x A2y A3x A3y A6x A6y Bx By O2x O2y O4x O4y
+for i=2:length(tita2)-1
     %ECUACIONES PARA BARRAS
     %Barra2
     [RO2, RA2]=getR(tita2(i),titacg2,rcg2,L2);
-    [RA3, RB3]=getR(tita3(i),titacg3,rcg3,L3);
+    [RA3, RB3]=getR(tita3(i),titacg3,rcg3B,L3);
     [RB4, RO4]=getR(tita4(i),titacg4,rcg4,L4);
+    [RC5, RD5]=getR(tita3(i),titacg5,rcg5,L3);
+    [RC6, RA6]=getR(tita4(i)+pi,titacg6,rcg6C,CA);
+    
         Px=2;
         m2=3;
         T=10;
-        
-%         Fx2 = Ax+O2x == m2*aCG2(1,i); %Tomo Fuerza en junta A como positiva sobre eslabon2
-%         Fy2 = Ay+O2y == m2*aCG2(2,i);
-%         M2  = ICG2*anga(2,i)==T+RO2(1)*O2y-RO2(2)*O2x+RA2(1)*Ay-RA2(2)*Ax;
+%         
+%         Fx2 = A2x+O2x == m2*aCG2(i,1); %Tomo Fuerza en junta A como positiva sobre eslabon2
+%         Fy2 = Ay+O2y == m2*aCG2(i,2);
+%         M2  = 0==T+RO2(1)*O2y-RO2(2)*O2x+RA2(1)*Ay-RA2(2)*Ax;
 %         %T= Torque sobre eslabon. P=omega*T
-%         M3  = ICG3*anga(3,i)==RA3(1)*(-Ay)-RA3(2)*(-Ax)+RB3(1)*By-RB3(2)*Bx;
+%         Fx4=A6x + Cx == m6*aCG6(2,)
+%         M3  = ICG3*anga(3,i)==RA3(1)*(A3y)-RA3(2)*(A3x)+RB3(1)*By-RB3(2)*Bx;
 %         M4  = ICG4*anga(4,i)==RB4(1)*(-By)-RB4(2)*(-Bx)+ RO4(1)*O4y-RO4(2)*O4x
-%         Fx3 = -Ax+Bx + Px == Px
+%         Fx3 = A3x+Bx + Px == Px
 
     
 end
 
 %% Graph that stuff
 %comment continue to graph
-for j=1:2
+for j=1:1
     y=tic;
     t=tic;
 for i=1:N
-%     continue
+    continue
     
     while refresh
         pause(.00000001)
@@ -294,6 +311,8 @@ for i=1:N
     scatter(Rcg2(i,1),Rcg2(i,2),'+')
     scatter(Rcg3(i,1),Rcg3(i,2),'+')
     scatter(Rcg4(i,1),Rcg4(i,2),'+')
+    scatter(Rcg6(i,1),Rcg6(i,2),'+')
+    scatter(Rcg5(i,1),Rcg5(i,2),'+')
     line([nodO2(i,1) nodA(i,1)],[nodO2(i,2) nodA(i,2)],'Color','k');%ESLABON 2
     line([nodA(i,1) nodB(i,1)],[nodA(i,2) nodB(i,2)],'Color','k'); %ESLABON 3
 %     line([nodB(i,1) nodO4(i,1)],[nodB(i,2) nodO4(i,2)]); %ESLABON 4 (B-O4)
@@ -311,9 +330,23 @@ for i=1:N
 end
 %     toc(t)
 end
-
+loopdiff(Rcg2,tau)
 function [Rcgin, Rcgout] = getR(titaglob,titacg,rin,L)
     titatot=titaglob+titacg;
     Rcgin=-rin*[cos(titatot) sin(titatot)];
     Rcgout=Rcgin+L*[cos(titaglob) sin(titaglob)];
+end
+
+function [newvec] = loopdiff(vec,tau)
+    [N dim] = size(vec);
+    newvec=zeros(size(vec));
+    for i=1:N
+    if i==1
+        dx=vec(i,:)-vec(N-1,:);
+
+    else
+        dx=vec(i,:)-vec(i-1,:);
+    end
+    newvec(i,:)=dx/tau;
+    end
 end
