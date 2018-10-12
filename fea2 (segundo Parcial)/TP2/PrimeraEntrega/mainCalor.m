@@ -3,14 +3,13 @@ clear
 close all
 eleType='Q4';
 escala=1;
-aux=load('elementos2.txt');
-elementos=aux(:,2:5);%porque es Q4
-aux=load('nodos2.txt');
+aux=load('TPele.txt');
+elementos=aux(:,2:5);%porque es Q8
+aux=load('TPnod.txt');
 nodos=aux(:,2:3); %mm
-numeracion=aux(:,1);
-[nodos elementos]=nodekill(nodos,numeracion,elementos)
 
-% nodenumbering=aux(:,1);
+numeracion=aux(:,1);
+[nodos, elementos]=nodekill(nodos,numeracion,elementos);
 % nodxs=-1*ones(max(nodenumbering),2); %Creo una nueva matriz que tiene los nodos en la fila correspondiente a su numero asignado
 % for i=1:size(nodos,1)
 %     nodxs(nodenumbering(i),[1 2])=nodos(i,:); %Tengo que hacer esto porque Mati o quien sea programo esta porqueria para que tome los nodos segun su linea. Parece a proposito este engendro de paradigma de programacion, seguro lo es.
@@ -39,22 +38,10 @@ nDimsT = size(nodos,2);          % dimensiones del problema
 
 %% Condiciones de borde
 bc = false(nDofTotT,1);       % Matriz de condiciones de borde
-bcf= false(nDofTotT,1);
-for i=1:nNodT
-    xy=nodos(i,:);
-    if (xy(1)==0 || xy(1)==1 ||xy(1)==.5) && xy(2)>=.5
-        bc(i)=true;
-    end
-    
-    aux=find(elementos==i,1);
-    if isempty(aux)
-        bcf(i)=true;
-    end
-end
-bc(5)=false;
+% bc(2:5,1:2) = true;
 %%
 % figure(1)
-myMeshplot(elementos,nodos,bc,'k',1,1)
+% myMeshplot(elementos,nodos,bc,'k',1,1)
 
 
 %% Puntos de Gauss
@@ -106,15 +93,16 @@ Co=[];
 Tc=[];
 for i=1:nNodT
     xy=nodos(i,:);
-    if (xy(1)==1 ||xy(1)==.5 || xy(1)==0) && xy(2)>=.5 && i~=5
-        Co=[Co i];
-        if xy(1)==0
-            Tc=[Tc;0];
+    if (xy(1)==40 || xy(1)==70) && xy(2)>=90
+        if xy(1)==40
+            Tc=[Tc; 0];
         else
-            Tc=[Tc; 120];% ADD COMMA
-        end     
+            Tc=[Tc; 120];
+        end
+        Co=[Co i];
     end
 end
+
 X=zeros(1,nNodT-length(Co));
 aux=1;
 for inod=1:size(nodos,1)
@@ -123,11 +111,10 @@ for inod=1:size(nodos,1)
         aux=aux+1;
     end
 end
-
-
+%% Coso donde haces xx cc xc
+% X=[2,3,4,7,8,9];
 Kxx=K(X,X);
 Kxc=K(X,Co);
-
 Q=Kxc*Tc;
 Tx=Kxx\-Q;
 T=zeros(15,1);

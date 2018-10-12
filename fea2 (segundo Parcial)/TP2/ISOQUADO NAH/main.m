@@ -8,7 +8,8 @@ n=250; %vueltas por segundo
 Sy=415;
 maximumstress=0;
 iter=0
-while maximumstress<Sy
+% while maximumstress<Sy
+while iter==0
     iter=iter+1;
 n=n+3;
 omega=2*pi*n;
@@ -66,12 +67,13 @@ A = 0;
 jmin = 1E10;
 int = zeros(nDofTot);
 Areas=zeros(nel,1);
+R = zeros(nNod,nDofNod);
+t=60;
 for iele = 1:nel
     nodesEle = nodos(elementos(iele,:),:);
     %Mecánicas
     Ke = zeros(nDofNod*nNodEle);
-    eleDofs = node2dof(elementos(iele,:),nDofNod);
-    eleDofs = reshape(eleDofs',[],1);
+    index=elementos(iele,:);
     %Térmicas
 %     KTe= zeros(1*nNodEle);
 %     eleDofsT=node2dof(elementos(iele,:),1);
@@ -81,6 +83,7 @@ for iele = 1:nel
         ksi = upg(ipg,1);
         eta = upg(ipg,2);
         
+        W=wpg(ipg);
         % Funciones de forma respecto de ksi, eta
         N = shapefuns([ksi eta],'Q8');
         
@@ -107,13 +110,17 @@ for iele = 1:nel
         Djac = det(jac);
 %         Areas(iele)=abs(Djac*4); Old calculation
         %Mecánica
-        Ke = Ke + B'*C*B*wpg(ipg)*Djac;
+        Ke = Ke + B'*C*B*Djac*W;
         %Térmica
 %         KTe = KTe + BT'*Ct*BT*wpg(ipg)*Djac;
         
         A = A + wpg(ipg)*Djac;
         %hago la integral me va a servir despues para calcular las fuerzas
-%         int(eleDofs,eleDofs)=int(eleDofs,eleDofs)+Nm'*Nm*det(jac);
+%         Fuerzas volumetricas
+        Rv=sum(nodesEle)/8; y=Rv(2);
+        r=280/2+y;
+        accl=omega^2*r;
+        R(index,2)=R(index,2)+N'*rho*accl*Djac*W;
         if Djac < jmin
             jmin = Djac;
         end
@@ -124,7 +131,7 @@ for iele = 1:nel
     A=0;
 end
 %% Cargas
-R = zeros(nNod,nDofNod);
+
 
 %Fuerzas de volumen (Fuerza centrifuga!!!!)
 centrifug

@@ -1,14 +1,39 @@
-t=1;
+%{
+Preguntas para Sebas: Como calcular fuerzas volumetricas. Vale usar 4|J|=A?
+Que nos dan para el parcial?
+
+%}
+%% Comienza la epica
+nmax=16.5*2;
+n=nmax/2; %vueltas por segundo
+Sy=415;
+maximumstress=0;
+iter=0;
+% while maximumstress<Sy
+while iter==0
+    iter=iter+1;
+n=n+3;
+omega=2*pi*n;
+%Se define el omega de rotación arriba
 escala=1;
-aux=load('elementos2.txt');
+aux=load('TPele.txt');
 elementos=aux(:,2:9);%porque es Q8
-aux=load('nodos2.txt');
+aux=load('TPnod.txt');
 nodos=aux(:,2:3); %mm
 numeracion=aux(:,1);
 [nodos, elementos]=nodekill(nodos,numeracion,elementos);
+% nodxs=-1*ones(max(nodenumbering),2); %Creo una nueva matriz que tiene los nodos en la fila correspondiente a su numero asignado
+% for i=1:size(nodos,1)
+%     nodxs(nodenumbering(i),[1 2])=nodos(i,:); %Tengo que hacer esto porque Mati o quien sea programo esta porqueria para que tome los nodos segun su linea. Parece a proposito este engendro de paradigma de programacion, seguro lo es.
+% end
+% fakeNodeNumber=max(nodenumbering);
+% fNN=fakeNodeNumber;
+% nodos=nodxs; %Finalmente asigno la matriz nodos
+% Seguro podria hacer el programa de cero, pero para que? No quiero
+% aprender.
 ticStart=tic;
 %% Datellis
-E=200e9; %N/mm^2
+E=200e3; %N/mm^2
 nu=0.3;
 C = (E/(1-nu^2))*[1 nu 0;
                   nu 1 0;
@@ -26,14 +51,11 @@ nDofTot = nDofNod*nNod;         % grados de libertad
 nDims = size(nodos,2);          % dimensiones del problema
 %% CB
 bc = false(nNod,nDofNod);       % Matriz de condiciones de borde
-for i=1:nNod
-    if nodos(i,2)==0
-        bc(i,:)=true;
-    end
-end
+    
+fixity %Aplica las condiciones de bordes en la base. 
 %% PLOT
 figure(1)
-myMeshplot(elementos,nodos,bc,'k',1,1) %Eligo si quiero con numeración con el ultimo parametro (1/0)
+% myMeshplot(elementos,nodos,bc,'k',1,0) %Eligo si quiero con numeración con el ultimo parametro (1/0)
 
 %% Puntos de Gauss
 rsInt = 3*ones(1,2);
@@ -85,7 +107,7 @@ for iele = 1:nel
         B(3,2:2:nDofNod*nNodEle) = dNxy(1,:);
         
         Djac = det(jac);
-        Areas(iele)=abs(Djac*4);
+%         Areas(iele)=abs(Djac*4); Old calculation
         %Mecánica
         Ke = Ke + B'*C*B*wpg(ipg)*Djac;
         %Térmica
@@ -100,16 +122,18 @@ for iele = 1:nel
     end
 %     KT(eleDofsT,eleDofsT)=KT(eleDofsT,eleDofsT)+KTe;
     K(eleDofs,eleDofs) = K(eleDofs,eleDofs) + Ke;
+    Areas(iele)=A;
+    A=0;
 end
 %% Cargas
 R = zeros(nNod,nDofNod);
 
 %Fuerzas de volumen (Fuerza centrifuga!!!!)
-
+centrifug
 
 %Carga Lineal
 % Fuerzas en superficies
-% q1 =@(x) -2*(150 - (210-x))/150; %MPa or N/mm^2
+q1 =@(x) -2*(150 - (210-x))/150; %MPa or N/mm^2
 % q2 = @(x) -550000*(1-x/52.5);
 % wallnodes=load('loadnod.txt');
 wnodespos=nodos(wallnodes,2);
@@ -182,17 +206,34 @@ for iele = 1:nel
         B(3,2:2:nDofNod*nNodEle) = dNxy(1,:);
         
         eleDofs = node2dof(elementos(iele,:),nDofNod);
+        stressatNodes=C*B*D(eleDofs);
         stress(inode,iele,:) = C*B*D(eleDofs);
     end
 end
-S=1;
-    
+sigx=stress(:,:,1);
+sigy=stress(:,:,2);
+sigxy=stress(:,:,3);
+sigvm=sqrt((sigx.^2+sigy.^2-sigx.*sigy+3*(sigxy.^2)));
+S=2;
+ger=stress;
+maximumstress=0;
+for i=1:nNod
+    if max(ger(:,2))>maximumstress
+        maximumstress=max(ger(:,2));
+    end
+end
+fprintf("iteracion n=%0.0f\nS=%0.2f",iter,maximumstress)
+pause(0.01)
+end
 % Configuración deformada
 nodePosition = nodos + escala*(reshape(D,nDofNod,[]))';
 figure(1)
-Meshplot(elementos,nodePosition,bc,'r',0)
+% Meshplot(elementos,nodePosition,bc,'r',0)
 % Gráfico
 figure(2)
+max(max(sigvm))
 bandplot(elementos,nodePosition,stress(:,:,S)',[],'k');
+vonmis=figure;
+bandplot(elementos,nodePosition,sigvm',[],'k');
 tocEnd=toc(ticStart);
 fprintf('El programa termino en %0.2f segundos\nLa solución fue encontrada en %0.3f segundos\n',tocEnd,tocSolve)

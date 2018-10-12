@@ -23,9 +23,10 @@ ticStart=tic;
 %% Datellis
 E=10; %N/mm^2
 nu=0.3;
-C = (E/(1-nu^2))*[1 nu 0;
-                  nu 1 0;
-                  0 0 (1-nu)/2]; %Plain Stress
+C = (E/((1+nu)*(1-2*nu)))*[1-nu    nu      0;
+                           nu  1-nu      0;
+                            0    0  0.5-nu];
+%Plain Stress
           % tal cual como me lo dieron a mi:
 
 nDofNod = 2;                    % grados de libertad por nodo
@@ -44,14 +45,16 @@ myMeshplot(elementos,nodos,bc,'k',1,1) %Eligo si quiero con numeración con el ul
 %% Puntos de Gauss
 rsInt = 3*ones(1,2);
 [wpg, upg, npg] = gauss(rsInt);
-
+Nm=zeros(2,16);
 %% Matriz de rigidez
 K = zeros(nDofTot);
 KT = zeros(nDofTot/2);
+
 A = 0;
 jmin = 1E10;
 inti = zeros(nDofTot);
 Areas=zeros(nel,1);
+
 for iele = 1:nel
     nodesEle = nodos(elementos(iele,:),:);
     %Mecánicas
@@ -70,10 +73,10 @@ for iele = 1:nel
         % Funciones de forma respecto de ksi, eta
         N = shapefuns([ksi eta],'Q8');
         
-%         Nm(1,1:2:7)=N;
-%         Nm(2,2:2:8)=N;
+        Nm(1,1:2:15)=N;
+        Nm(2,2:2:16)=N;
         
-        % Derivadas de las funciones de forma respecto de ksi, eta
+        % Derivadas de las funciones de forma resp16to de ksi, eta
         dN = shapefunsder([ksi eta],'Q8');
         % Derivadas de x,y, respecto de ksi, eta
         jac = dN*nodesEle;
@@ -87,7 +90,6 @@ for iele = 1:nel
         B(3,2:2:nDofNod*nNodEle) = dNxy(1,:);
         
         Djac = det(jac);
-        Areas(iele)=abs(Djac*4);
         %Mecánica
         Ke = Ke + B'*C*B*wpg(ipg)*Djac;
         %Térmica
@@ -95,45 +97,54 @@ for iele = 1:nel
         
         A = A + wpg(ipg)*Djac;
         %hago la integral me va a servir despues para calcular las fuerzas
-%         inti(eleDofs,eleDofs)=inti(eleDofs,eleDofs)+N'*N*det(jac);
+        
+        inti(eleDofs,eleDofs)=inti(eleDofs,eleDofs)+Nm'*Nm*det(jac);
+
         if Djac < jmin
             jmin = Djac;
         end
     end
 %     KT(eleDofsT,eleDofsT)=KT(eleDofsT,eleDofsT)+KTe;
-
+    Areas(iele)=A;
     K(eleDofs,eleDofs) = K(eleDofs,eleDofs) + Ke;
+    A=0;
 end
 %% Cargas
 R = zeros(nNod,nDofNod);
-
-%Fuerzas de volumen (Fuerza centrifuga!!!!)
-centrifug
-
-%Carga Lineal
-% Fuerzas en superficies
-q1 =@(x) -2*(150 - (210-x))/150; %MPa or N/mm^2
-% q2 = @(x) -550000*(1-x/52.5);
-% wallnodes=load('loadnod.txt');
-wnodespos=nodos(wallnodes,2);
-Lwall=diff(wnodespos);
-Nwall=size(wallnodes,1);
-Nq8=[4 2 -1;2 16 2;-1 2 4];
-Fv=@(qv,L) L/15*Nq8*qv;
-
-for iele=1:Nwall
-    if iele<=(Nwall-1)/2 %para que no salga de indice
-        index=[iele*2-1 iele*2 iele*2+1];
-        pos=wnodespos(index);
-        qv=[q1(pos(1)); q1(pos(2)) ;q1(pos(3))];
-        rvl=(Lwall(iele*2,1)/15)*Nq8*qv;
-        R(wallnodes(iele*2-1,1),1)=R(wallnodes(iele*2-1,1),1)+rvl(1);
-        R(wallnodes(iele*2,1),1)=R(wallnodes(iele*2,1),1)+rvl(2);
-        R(wallnodes(iele*2+1,1),1)=R(wallnodes(iele*2+1,1),1)+rvl(3);
+g=1; %m/s
+t=1; %espesor
+rho=1;
+f=rho*g;
+for iele=1:nel
+    nodesEle = nodos(elementos(iele,:),:);
+    index=elementos(iele,:);
+    for ipg=1:npg
+        ksi = upg(ipg,1);
+        eta = upg(ipg,2);
         
+        weight=wpg(ipg);
+        
+        N = shapefuns([ksi eta],'Q8');
+        dN = shapefunsder([ksi eta],'Q8');
+        
+        
+        jac = dN*nodesEle;
+        
+        dNxy = jac\dN;          % dNxy = inv(jac)*dN
+
+        B = zeros(size(C,2),nDofNod*nNodEle);
+        B(1,1:2:nDofNod*nNodEle-1) = dNxy(1,:);
+        B(2,2:2:nDofNod*nNodEle) = dNxy(2,:);
+        B(3,1:2:nDofNod*nNodEle-1) = dNxy(2,:);
+        B(3,2:2:nDofNod*nNodEle) = dNxy(1,:);
+        
+        Detjac=det(jac);
+        
+        R(index,2)=R(index,2)+N'*f*Detjac*weight;
     end
-    %No esta definido para otro tipo de elemento que no sea Q8
 end
+
+%Busco nodos de pared sometida a compresion (y flexion)
 %% Reducción y Resolución
 isFixed = reshape(bc',[],1);
 isFree = ~isFixed;
@@ -188,12 +199,12 @@ for iele = 1:nel
         stress(inode,iele,:) = C*B*D(eleDofs);
     end
 end
-S=1;
+S=2;
     
-% Configuración deformada
+% Configuración defo+rmada
 nodePosition = nodos + escala*(reshape(D,nDofNod,[]))';
 figure(1)
-Meshplot(elementos,nodePosition,bc,'r',0)
+myMeshplot(elementos,nodePosition,bc,'r',0,1)
 % Gráfico
 figure(2)
 bandplot(elementos,nodePosition,stress(:,:,S)',[],'k');

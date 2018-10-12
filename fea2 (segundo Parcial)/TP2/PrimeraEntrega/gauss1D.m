@@ -1,7 +1,6 @@
 function [w,gp] = gauss1D(n)
 
 switch n
-
     case 1
         w  = 2;
         gp = 0;
