@@ -205,6 +205,17 @@ tita=[tita1;tita2;tita3;tita4];
 %% Calculo de Fuerzas
 kari=150/sqrt((72+40)^2+(107+61)^2); %Escala Ari
 
+ICG2 = 4580.141916; %mm^2
+ICG3 = 66100.713840; %mm^2
+ICG4 = 15890.378168;%mm^2
+ICG5 = 33479.246276; %mm^2
+ICG6 = 15890.378168; %mm^2
+IG=[0 ICG2 ICG3 ICG4 ICG5 ICG6];
+
+density=7.9e3; %kg/m^3
+Areas = [0 19738 79625 17256 51610 17256]; 
+
+
 titacg2=0; %medido desde O2
 rcg2=sqrt(40^2 + 61^2)*kari;
 
