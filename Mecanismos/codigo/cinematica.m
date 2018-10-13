@@ -1,6 +1,7 @@
 % clear all;
 clc;
 graph=true;
+vueltas=3;
 
 colorO2=[100 70 0]/255;
 colorO4=[100 80 40]/255;
@@ -255,7 +256,7 @@ aG=loopdiff(vG,tau);
 
 %% Graph that stuff
 %comment continue to graph
-for j=1:1
+for j=1:vueltas
     y=tic;
     t=tic;
 for i=1:N

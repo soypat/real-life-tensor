@@ -63,11 +63,12 @@
 % ylabel('$$rad/s^2$$','Interpreter','latex')
 % xlabel('$$\theta_2$$','Interpreter','latex')   
 
-% eta=vabsA./vabsX;
-% plot(tita2,eta);
-% plot([0 2*pi],[1 1])
-% xlim([0 2*pi]);
-% 
-% title('Relación de velocidades entre A y \alpha')
-% ylabel('$$\eta_{A \alpha}=\frac{|V_{A}|}{|V_{\alpha}|}$$','Interpreter','latex')
-% xlabel('$$\theta_2$$','Interpreter','latex')
+eta=vabsX./vabsA;
+plot(tita2,eta);
+hold on
+plot([0 2*pi],[1 1])
+xlim([0 2*pi]);
+
+title('Relación de velocidades entre \alpha y A')
+ylabel('$$\eta_{\alpha A}=\frac{|V_{\alpha}|}{|V_{A}|}$$','Interpreter','latex')
+xlabel('$$\theta_2$$','Interpreter','latex')

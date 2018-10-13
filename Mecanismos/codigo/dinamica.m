@@ -1,6 +1,12 @@
 %% DINAMICA
 graph=true;
-
+%{
+Pregunta para pablo
+Está bien modelar la fuerza como viscosa?
+Cuanto le doy para la fuerza maxima? Tengo que usar los 11 kW?
+Que onda las ecuaciones para calcular fuerzas. Esta bien 
+descomponer en tres fuerzas sobre el bulon?
+%}
 % for i=2:length(tita2)-1
 
 %% Dimensiones
@@ -112,46 +118,18 @@ end
     O4=(forza(:,15).^2+forza(:,16).^2).^.5;
     T=forza(:,17);
     
+    %% Calculos de Energía
+    Pot=abs(T*vang(2,2));
+    potenciaEntregadaALaMasa=abs(Pv.*vabsX/1000);
+    eficienciaPot=potenciaEntregadaALaMasa./Pot;
+    
+    etaPot=potenciaEntregadaALaMasa./Pot;
+    
+    Ecinet=(abs(vG/1000).^2).*masa';
    %% Grafico
 if graph==true
-tta=tita(2,:);
-Pot=abs(T*vang(2,2));
-close all
-%Carga aplicada P
-CargaAp=figure;
-    plot(tta,Pv)
-    title('Fuerzas aplicada sobre \alpha')
-    ylabel('Fuerza [N]')
-    xlabel('\theta_2 [rad]')
-    xlim([0 2*pi])
-%TORQUE
-torque=figure;
-    plot(tta,T)
-    hold on
-    plot(tta,Pot)
-    title('Torque sobre manivela y potencia')
-    ylabel('Torque/Potencia [Nm/W]')
-    xlabel('\theta_2 [rad]')
-    legend('Torque','Potencia')
-    xlim([0 2*pi])
-%FUERZAS
-fuerzas=figure;
-    plot(tta,A2)
-    hold on
-    plot(tta,A3)
-    plot(tta,A6)
-    plot(tta,B)
-    plot(tta,C)
-    plot(tta,D)
-    plot(tta,O2)
-    plot(tta,O4)
-    plot(tta,Pv)
-    legend('A2','A3','A6','B','C','D','O2','O4','P')
-    title('Fuerzas absolutas sobre juntas')
-    ylabel('Fuerza [N]')
-    xlabel('\theta_2 [rad]')
-    xlim([0 2*pi])
-%
+
+    dinagraf
 end
 %% OTRO
 
