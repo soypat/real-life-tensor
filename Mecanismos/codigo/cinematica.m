@@ -1,6 +1,6 @@
 % clear all;
 clc;
-graph=true;
+graph=false;
 vueltas=3;
 
 colorO2=[100 70 0]/255;

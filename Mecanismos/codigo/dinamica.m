@@ -19,14 +19,13 @@ Areas = [0 19738 79625 17256 51610 17256];%mm^2
 masa=e*Areas*densitymm; %MASA CALCULADA
 
 ICG2 = 4580.141916; %mm^2    IG*alfa= Nm = R*ma= m^2*kg*s^-2
-ICG3 = 66100.713840; %mm^2   mm^2*s^-2
-ICG4 = 15890.378168;%mm^2
-ICG5 = 33479.246276; %mm^2
-ICG6 = 15890.378168; %mm^2
+ICG3 = 15890.378168; %mm^2
+ICG4 = 33479.246276; %mm^2
+ICG5 = 15890.378168;%mm^2
+ICG6 = 66100.713840; %mm^2   mm^2*s^-2
 
 IG=[0 ICG2 ICG3 ICG4 ICG5 ICG6];
 IG=IG.*masa*1e-6; % kg m^2
-
 
 
 %% Solver
@@ -119,7 +118,7 @@ end
     T=forza(:,17);
     
     %% Calculos de Energía
-    Pot=abs(T*vang(2,2));
+    Pot=T*vang(2,2);
     potenciaEntregadaALaMasa=abs(Pv.*vabsX/1000);
     eficienciaPot=potenciaEntregadaALaMasa./Pot;
     

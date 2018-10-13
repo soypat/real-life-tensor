@@ -59,4 +59,27 @@ potencias=figure;
     title('Energia cinetica de eslabones')
     xlabel('\theta_2 [rad]')
     ylabel('Energía neta [J]')
+%VELOCIDADES Y ACELERACIONES DE LOS CENTROS DE MASA
+velocidades=figure;
+    plot(tta,abs(vG(2,:)));
+    hold on
+    plot(tta,abs(vG(3,:)));
+    plot(tta,abs(vG(4,:)));
+    plot(tta,abs(vG(5,:)));
+    plot(tta,abs(vG(6,:)));
+    legend('2','3','4','5','6')
+    title('Velocidades absolutas de los eslabones')
+    xlabel('\theta_2 [rad]')
+    ylabel('velocidad [mm/s]')
+aceleraciones=figure;
+    plot(tta,abs(aG(2,:)));
+    hold on
+    plot(tta,abs(aG(3,:)));
+    plot(tta,abs(aG(4,:)));
+    plot(tta,abs(aG(5,:)));
+    plot(tta,abs(aG(6,:)));
+    legend('2','3','4','5','6')
+    title('Aceleraciones absolutas de los eslabones')
+    xlabel('\theta_2 [rad]')
+    ylabel('aceleracion [mm/s^2]')
     
