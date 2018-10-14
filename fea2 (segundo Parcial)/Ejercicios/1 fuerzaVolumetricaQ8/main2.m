@@ -96,9 +96,6 @@ for iele = 1:nel
 %         KTe = KTe + BT'*Ct*BT*wpg(ipg)*Djac;
         
         A = A + wpg(ipg)*Djac;
-        %hago la integral me va a servir despues para calcular las fuerzas
-        
-        inti(eleDofs,eleDofs)=inti(eleDofs,eleDofs)+Nm'*Nm*det(jac);
 
         if Djac < jmin
             jmin = Djac;
@@ -144,7 +141,6 @@ for iele=1:nel
     end
 end
 
-%Busco nodos de pared sometida a compresion (y flexion)
 %% Reducción y Resolución
 isFixed = reshape(bc',[],1);
 isFree = ~isFixed;
@@ -199,6 +195,10 @@ for iele = 1:nel
         stress(inode,iele,:) = C*B*D(eleDofs);
     end
 end
+sigx=stress(:,:,1);
+sigy=stress(:,:,2);
+sigxy=stress(:,:,3);
+sigvm=sqrt(sigx.^2+sigy.^2 -sigx.*sigy + 3*sigxy.^2);
 S=2;
     
 % Configuración defo+rmada
@@ -207,6 +207,6 @@ figure(1)
 myMeshplot(elementos,nodePosition,bc,'r',0,1)
 % Gráfico
 figure(2)
-bandplot(elementos,nodePosition,stress(:,:,S)',[],'k');
+bandplot(elementos,nodePosition,sigvm',[],'k');
 tocEnd=toc(ticStart);
 fprintf('El programa termino en %0.2f segundos\nLa solución fue encontrada en %0.3f segundos\n',tocEnd,tocSolve)

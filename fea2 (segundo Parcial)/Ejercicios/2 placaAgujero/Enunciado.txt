@@ -1,0 +1,12 @@
+Modelar Placa-Agujero en Plane Strain 
+Material: Acero
+E=200GPa
+nu=0,3
+
+Placa:
+2x2metros
+agujero centrado de 50cm de diametro
+
+Carga:
+1MN/m en traccion en ambos extremos
+

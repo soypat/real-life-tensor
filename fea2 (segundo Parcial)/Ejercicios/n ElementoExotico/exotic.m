@@ -1,6 +1,6 @@
-%% Parcial 2
+%% Elemento exotico Q5 rectangular 2D. (Q4 con nodo extra en 0,0)
 % clear; close all; clc
-%% Ej1.a
+%% Obtención de funciones de forma
 syms x y real
 X = [1 x y x^2 x*y];
 A = [1 -1 -1  1  1
@@ -14,7 +14,11 @@ dNy = diff(N,y);
 dN = [dNx; dNy];
 sum(N);  % == 1
 sum(dN'); % == 0
- 
+
+Ncook(1,1:2:2*length(N))=N;
+Ncook(2,2:2:2*length(N))=N; %Tiene la forma de las funciones de forma encontradas en el cook pg 206, ecuacion (6.2-2). Despues veo si me sirven
+
+
 %% Datos
 E = 200E3; %[MPa]
 nu = 0.3;
@@ -38,7 +42,7 @@ nodporelem = 5;
 doftot = dofpornodo*nnod;
 dof = reshape((1:doftot)',dofpornodo,nnod)';
 
-%% Constitutiva
+%% Constitutiva (PlaneStrain)
 Cstrain = E/((1 + nu)*(1 - 2*nu))*[ 1 - nu      nu            0.0
                                       nu       1 - nu         0.0
                                       0.0        0.0     (1 - 2*nu)/2 ];
@@ -50,15 +54,25 @@ upg = [ -a  -a
         -a   a
          a  -a
          a   a ];
-b = sqrt(.6);
-upg3 = [-b -b; %Para orden n=3 (no lo usamos en este caso)
-        -b  b;
-         b -b;
-         b  b];
-          
 % Número de puntos de Gauss
 npg = size(upg,1);
 wpg = ones(npg,1); %Weight vale 1 para orden n=2 tabla pg 210.
+
+%% Gauss para regla 3x3
+a3 = sqrt(.6);
+upg3 = [-a3 -a3; %Para orden n=3 (no lo usamos en este caso)
+        -a3  0;
+        -a3  a3;
+         0  -a3;
+         0   0; % Nodo 5 está en el medio, va tener un weight diferente
+         0   a3;
+         a3  -a3;
+         a3   0;
+         a3   a3]; %Numerados según figura 6.3-3
+
+wpg3    = 5/9*ones(9,1); %sale de la misma tabla (6.3-1)
+wpg3(5) = 8/9;
+npg3=9;
 
 %% Matriz de rigidez
 Kglobal = zeros(doftot);
@@ -69,9 +83,7 @@ for e = 1:nelem
         % Punto de Gauss
         x = upg(ipg,1);
         y = upg(ipg,2);  
-        % Derivadas de las funciones de forma respecto de ksi, eta
-%         dN = [ x/2 + y/4 - 1/4, x/2 - y/4 + 1/4, x/2 + y/4 + 1/4, x/2 - y/4 - 1/4, -2*x
-%                      x/4 - 1/4,     - x/4 - 1/4,       x/4 + 1/4,       1/4 - x/4,    0];
+
         dNs=subs(dN);
         % Derivadas de x,y, respecto de ksi, eta
         J = dNs*nodelem;                      
@@ -164,17 +176,7 @@ for e = 1:nelem
         B(3,2:2:8) = dNxy(1,:);
         dofs = reshape(dof(elem(e,1:4),:)',[],1);
         stress(e,in,:) = Cstrain*B*D(dofs);
-        sigmavmorigi(e,in) = sqrt(stress(e,in,1)^2-stress(e,in,1)*stress(e,in,2)+stress(e,in,2)^2+3*stress(e,in,3)^2);
-    end
+            end
 end
 
 sigvm=sqrt(stress(:,:,1).^2+stress(:,:,2).^2-stress(:,:,1).*stress(:,:,2)+3*stress(:,:,3).^2)
-
-
-
-
-
-
-
-
-

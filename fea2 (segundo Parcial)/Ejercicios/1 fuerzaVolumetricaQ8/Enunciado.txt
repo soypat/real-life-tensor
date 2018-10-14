@@ -4,3 +4,4 @@ poisson = 0,3
 E (Modulo young) = 10
 
 Empotramientos en 2 nodos inferiores de las esquinas
+plane strain
