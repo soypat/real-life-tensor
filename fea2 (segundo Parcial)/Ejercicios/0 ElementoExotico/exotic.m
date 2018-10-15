@@ -31,11 +31,11 @@ t = 1;
 %% Nodos y Elementos
 nod = [-1 -1
         1 -1
-        0  0
+        1  1
        -1  1
-        1  1]*1E3;
+        0  0]*1E3;
 nnod = size(nod,1);
-elem = [1 2 5 4 3];
+elem = [1 2 3 4 5];
 nelem = size(elem,1);
 
 %% DOF
@@ -180,12 +180,13 @@ for e = 1:nelem
     for in = 1:npg
         x = upg(in,1);
         y = upg(in,2);  
-        dN = 1/4*[-(1-y)   1-y    1+y  -(1+y)
-                  -(1-x) -(1+x)   1+x    1-x ];
+%         dN = 1/4*[-(1-y)   1-y    1+y  -(1+y)
+%                   -(1-x) -(1+x)   1+x    1-x ];
+        dN = [dNx(1:4); dNy(1:4)];
+        dNs = subs(dN);
+        J = dNs*nodelem;
         
-        J = dN*nodelem;
-        
-        dNxy = J\dN;
+        dNxy = J\dNs;
         B = zeros(size(Cstrain,2),dofpornodo*npg);
         B(1,1:2:7) = dNxy(1,:);
         B(2,2:2:8) = dNxy(2,:);
@@ -197,3 +198,7 @@ for e = 1:nelem
 end
 
 sigvm=sqrt(stress(:,:,1).^2+stress(:,:,2).^2-stress(:,:,1).*stress(:,:,2)+3*stress(:,:,3).^2)
+Po=P
+stresso=stress
+Do=D
+sigo=sigvm

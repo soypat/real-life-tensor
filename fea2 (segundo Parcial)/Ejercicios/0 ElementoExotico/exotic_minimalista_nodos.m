@@ -38,7 +38,7 @@ nelem = size(elem,1);
 dofpornodo = 2;
 nodporelem = 5;
 doftot = dofpornodo*nnod;
-dof = reshape((1:doftot)',dofpornodo,nnod)';
+dof = reshape((1:doftot),dofpornodo,nnod)';
 
 %% Constitutiva (PlaneStrain)
 Cstrain = E/((1 + nu)*(1 - 2*nu))*[ 1 - nu      nu            0.0;nu       1 - nu         0.0;0.0        0.0     (1 - 2*nu)/2 ];
@@ -90,11 +90,10 @@ P = zeros(doftot/2,2);
 q = 0.002; %[N/mm]
 f =@(x) q*x;
 a   = 1/sqrt(3);
-% a = sqrt(0.6);
 upg = [-a a];    
 npg = size(upg,2);
 wpg = ones(npg,1);
-% wpg = [5 8 5]/9;
+
 surfacenodes=[4 3]; %Según el orden de numeración en tu matriz elementos (elem). en este caso 4 apunta a 4, y 5 apunta a 3
 for e = 1:nelem
     nodelem = nod(elem(e,:),:);
@@ -107,19 +106,18 @@ for e = 1:nelem
         sig = f(x);
         J = subs(dNaux)*nodelem;
         %Usamos la forma de cook de 6.9-5
-        
-%         P(elem(e,surfacenodes),:)=P(elem(e,surfacenodes),:)+
+        %Si queremos que sea generalizado, reemplazamos 4 y 3 por
+        %surfacenodes(1) y (2)
         P(elem(e,4),:) = P(elem(e,4),:) + subs(shapefuns(4))*wpg(ipg)*[0 sig*J(1,1)]; %La integral 6.9-5 del Cook
         P(elem(e,3),:) = P(elem(e,3),:) + subs(shapefuns(3))*wpg(ipg)*[0 sig*J(1,1)];
     end
 end
 P = reshape(P',[],1);
-
 %% Solver
 Dred = Kglobal(free,free)\P(free);
 D = zeros(doftot,1);
 D(free) = Dred;
-cnodfinal = nod+reshape(D,dofpornodo,nnod)'*10000000;
+cnodfinal = nod+reshape(D,dofpornodo,nnod)'*10000000;%Para que se vean los desplz.
 figure
 hold on; grid on; axis equal;
 plot(nod(:,1),nod(:,2),'.')
@@ -136,29 +134,50 @@ upg = [ -a  -a
 npg = size(upg,1);
 wpg = ones(npg,1);
 
-%% Tensiones
-stress = zeros(nelem,nodporelem-1,3);
-sigvm = zeros(nelem,nodporelem-1);
+%% Tensiones en Puntos Gauss
+stressg = zeros(nelem,nodporelem-1,3);
 for e = 1:nelem
-    nodelem = nod(elem(e,1:4),:);
+    nodelem = nod(elem(e,:),:);
+    dofs = reshape(dof(elem(e,:),:)',[],1);
     for in = 1:npg
         x = upg(in,1);
         y = upg(in,2);  
-        dN = 1/4*[-(1-y)   1-y    1+y  -(1+y)
-                  -(1-x) -(1+x)   1+x    1-x ];
+
+        J = subs(dNaux)*nodelem;
         
-        J = dN*nodelem;
+        dNxy = J\subs(dN);
         
-        dNxy = J\dN;
-        B = zeros(size(Cstrain,2),dofpornodo*npg);
-        B(1,1:2:7) = dNxy(1,:);
-        B(2,2:2:8) = dNxy(2,:);
-        B(3,1:2:7) = dNxy(2,:);
-        B(3,2:2:8) = dNxy(1,:);
-        dofs = reshape(dof(elem(e,1:4),:)',[],1);
-        stress(e,in,:) = Cstrain*B*D(dofs);
-            end
+        B=zeros(size(Cstrain,2),size(Ke,1)); %Segunda Forma
+        B(1:2,:)=dNxy;
+        B(3,2:end)=dNxy(1,1:end-1);
+        B(3,1:end-1)=B(3,1:end-1)+dNxy(2,2:end);
+            
+        stressg(e,in,:) = Cstrain*B*D(dofs);
+     end
 end
 
-sigvm=sqrt(stress(:,:,1).^2+stress(:,:,2).^2-stress(:,:,1).*stress(:,:,2)+3*stress(:,:,3).^2)
-bandplot(nod,elem,sigvm')
+%% Tensiones en nodos
+uNod=[-1 -1; 1 -1; 1 1;-1 1; 0 0]; %posiciones nodos xi(ksi), eta
+stress = zeros(nodporelem,nelem,3); %de la forma catedra
+for e = 1:nelem
+    nodelem = nod(elem(e,:),:);
+    dofs = reshape(dof(elem(e,:),:)',[],1);
+    for inod = 1:nodporelem
+        x = uNod(inod,1);
+        y = uNod(inod,2);
+        
+        J = subs(dNaux)*nodelem;
+        
+        dNxy = J\subs(dN);
+        
+        B=zeros(size(Cstrain,2),size(Ke,1)); %Segunda Forma
+        B(1:2,:)=dNxy;
+        B(3,2:end)=dNxy(1,1:end-1);
+        B(3,1:end-1)=B(3,1:end-1)+dNxy(2,2:end);
+        
+        stress(inod,e,:) = Cstrain*B*D(dofs);
+    end
+end
+sigvm=sqrt(stress(:,:,1).^2+stress(:,:,2).^2-stress(:,:,1).*stress(:,:,2)+3*stress(:,:,3).^2);
+%como tengo un nodo no convencional, lo saco para el bandplot
+bandplot(elem(1:4),nod(1:4,:),stress(1:4,:,3)')
