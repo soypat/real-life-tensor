@@ -27,11 +27,11 @@ t = 1;
 %% Nodos y Elementos
 nod = [-1 -1
         1 -1
-        0  0
-       -1  1
-        1  1]*1E3;
+        1  1
+        -1  1
+        0  0]*1E3; %conversion a mm
 nnod = size(nod,1);
-elem = [1 2 5 4 3];
+elem = [1 2 3 4 5];
 nelem = size(elem,1);
 
 %% DOF
@@ -95,7 +95,7 @@ upg = [-a a];
 npg = size(upg,2);
 wpg = ones(npg,1);
 % wpg = [5 8 5]/9;
-surfacenodes=[4 5]; %Según el orden de numeración en tu matriz elementos (elem). en este caso 4 apunta a 4, y 5 apunta a 3
+surfacenodes=[4 3]; %Según el orden de numeración en tu matriz elementos (elem). en este caso 4 apunta a 4, y 5 apunta a 3
 for e = 1:nelem
     nodelem = nod(elem(e,:),:);
     for ipg = 1:npg
@@ -106,11 +106,11 @@ for e = 1:nelem
         dNs=subs(dN);
         sig = f(x);
         J = subs(dNaux)*nodelem;
-        Nedge=subs(N(:,3*2-1:4*2));
+        %Usamos la forma de cook de 6.9-5
         
 %         P(elem(e,surfacenodes),:)=P(elem(e,surfacenodes),:)+
         P(elem(e,4),:) = P(elem(e,4),:) + subs(shapefuns(4))*wpg(ipg)*[0 sig*J(1,1)]; %La integral 6.9-5 del Cook
-        P(elem(e,5),:) = P(elem(e,5),:) + subs(shapefuns(3))*wpg(ipg)*[0 sig*J(1,1)];
+        P(elem(e,3),:) = P(elem(e,3),:) + subs(shapefuns(3))*wpg(ipg)*[0 sig*J(1,1)];
     end
 end
 P = reshape(P',[],1);

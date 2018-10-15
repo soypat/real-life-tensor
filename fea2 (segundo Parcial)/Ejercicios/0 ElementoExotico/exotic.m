@@ -14,7 +14,7 @@ dNx = diff(N,x);
 dNy = diff(N,y);
 dN = [dNx; dNy];
 sum(N);  % == 1
-sum(dN'); % == 0
+sum(dN,2); % == 0
 
 Ncook(1,1:2:2*length(N))=N;
 Ncook(2,2:2:2*length(N))=N; %Tiene la forma de las funciones de forma encontradas en el cook pg 206, ecuacion (6.2-2). Despues veo si me sirven
