@@ -3,7 +3,7 @@ Preguntas para Sebas: Como calcular fuerzas volumetricas. Vale usar 4|J|=A?
 Que nos dan para el parcial?
 
 %}
-clear N dN ksi eta
+clear N dN dNaux ksi eta
 clear
 %% Comienza la epica
 nmax=16.5*2;
@@ -18,12 +18,12 @@ n=n+3;
 omega=2*pi*n;
 %Se define el omega de rotación arriba
 escala=1;
-aux=load('TPele.txt');
+aux=load('elem.txt');
 elementos=aux(:,2:9);%porque es Q8
-aux=load('TPnod.txt');
+aux=load('nod.txt');
 nodos=aux(:,2:3); %mm
 numeracion=aux(:,1);
-[nodos, elementos]=nodekill(nodos,numeracion,elementos);
+% [nodos, elementos]=nodekill(nodos,numeracion,elementos);
 % nodxs=-1*ones(max(nodenumbering),2); %Creo una nueva matriz que tiene los nodos en la fila correspondiente a su numero asignado
 % for i=1:size(nodos,1)
 %     nodxs(nodenumbering(i),[1 2])=nodos(i,:); %Tengo que hacer esto porque Mati o quien sea programo esta porqueria para que tome los nodos segun su linea. Parece a proposito este engendro de paradigma de programacion, seguro lo es.
@@ -54,7 +54,7 @@ nDims = size(nodos,2);          % dimensiones del problema
 %% CB
 bc = false(nNod,nDofNod);       % Matriz de condiciones de borde
     
-fixity %Aplica las condiciones de bordes en la base. 
+% fixity %Aplica las condiciones de bordes en la base. 
 %% PLOT
 figure(1)
 % myMeshplot(elementos,nodos,bc,'k',1,0) %Eligo si quiero con numeración con el ultimo parametro (1/0)
