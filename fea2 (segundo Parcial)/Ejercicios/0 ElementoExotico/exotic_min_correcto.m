@@ -4,11 +4,11 @@
 %% Obtención de funciones de forma
 clear dN N dNaux
 syms x y real
-X = [1 x y x^2 x*y];
+X = [1 x y x*y x^2*y^2];
 A = [1 -1 -1  1  1
-     1  1 -1  1 -1
+     1  1 -1  -1 1
      1  1  1  1  1
-     1 -1  1  1 -1
+     1 -1  1  -1  1
      1  0  0  0 0];  
 shapefuns = X/A;
 
@@ -85,34 +85,36 @@ fixity=false(doftot,1);
 fixity([1 2 4])=true;
 free=~fixity;
 
-%% Cargas
-P = zeros(doftot/2,2);
-q = 0.002; %[N/mm]
-f =@(x) q*x;
+
+%% GAUSS 1D
 a   = 1/sqrt(3);
 upg = [-a a];    
 npg = size(upg,2);
 wpg = ones(npg,1);
-
+%% Cargas
+P = zeros(doftot/2,2);
+q = 0.002; %[N/mm]
+f =@(x) q*x;
 surfacenodes=[4 3]; %Según el orden de numeración en tu matriz elementos (elem). en este caso 4 apunta a 4, y 5 apunta a 3
+P=reshape(P',[],1);
 for e = 1:nelem
     nodelem = nod(elem(e,:),:);
+    meindof=dof;
+%     meindof=reshape(elem(e,:),2,[])';
     for ipg = 1:npg
         x = upg(ipg);
         y = 1; %El truco que no te querían mostrar para aplicar una carga superficial. Te parás sobre la linea!
         Ns=subs(N);
-
         dNs=subs(dN);
         sig = f(x);
         J = subs(dNaux)*nodelem;
-        %Usamos la forma de cook de 6.9-5
-        %Si queremos que sea generalizado, reemplazamos 4 y 3 por
-        %surfacenodes(1) y (2)
-        P(elem(e,4),:) = P(elem(e,4),:) + subs(shapefuns(4))*wpg(ipg)*[0 sig*J(1,1)]; %La integral 6.9-5 del Cook
-        P(elem(e,3),:) = P(elem(e,3),:) + subs(shapefuns(3))*wpg(ipg)*[0 sig*J(1,1)];
+        for snod=surfacenodes %ITERO SOBRE LOS NODOS
+            P(meindof(snod,1)) = P(meindof(snod,1)) + subs(shapefuns(snod))*wpg(ipg)*(-sig*J(1,2)); %J(1,2) es cero, no se evalua esta parte
+            P(meindof(snod,2)) = P(meindof(snod,2)) + subs(shapefuns(snod))*wpg(ipg)*sig*J(1,1);%La integral 6.9-5 del Cook
+        end
     end
 end
-P = reshape(P',[],1);
+
 %% Solver
 Dred = Kglobal(free,free)\P(free);
 D = zeros(doftot,1);

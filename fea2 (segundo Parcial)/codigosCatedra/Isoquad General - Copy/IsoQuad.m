@@ -1,21 +1,54 @@
-%Q8, tau_xy
+clear
+clc
+close all
+
 TestType ='Tau_xy';% 'Sigma_y' ; % 'Sigma_y' ; % 'Sigma_x' ; %
-eleType = 'Q8';% 
+eleType = 'Q4';% 'Q4', 'Q9'
 escala=1; %Escala desplazamientos
 %% Discretizacion
-nodos = [1 0;2 0;0 2;0 1;1.5 0;2*sind(45) 2*sind(45);0 1.5;sind(45) sind(45)];
-elementos = 1:8;
 
-%% Propiedades del Material {plain stress}
+% CARGAR MALLA de Adina
+if strcmp(eleType,'Q4')
+    nodos = [ 0.00      0.00
+              1.00      0.00
+              1.00      1.00
+              0.00      1.00];
+    elementos = 1:4;   % Matriz de conectividades - ajustar de acuerdo a número de nodos por elemento
+elseif strcmp(eleType,'Q8')
+    nodos = [ 0.00      0.00
+              1.00      0.00
+              1.00      1.00
+              0.00      1.00
+              0.50      0.00
+              1.00      0.50
+              0.50      1.00
+              0.00      0.50];
+    elementos = 1:8;
+elseif strcmp(eleType,'Q9')
+    nodos = [ 0.00      0.00
+              1.00      0.00
+              1.00      1.00
+              0.00      1.00
+              0.50      0.00
+              1.00      0.50
+              0.50      1.00
+              0.00      0.50
+              0.50      0.50];
+    elementos = 1:9;
+end
+
+%% Propiedades del Material
 E=1;
 nu=0.3;
-% C = (E/(1-nu^2))*[1 nu 0;
-%                   nu 1 0;
-%                   0 0 (1-nu)/2];
-%%Plane Strain
-C = (E/((1+nu)*(1-2*nu)))*[1-nu    nu      0;
-                           nu  1-nu      0;
-                            0    0  0.5-nu];
+%Plane Strain
+%C = (E/((1+nu)*(1-2*nu)))*[1-nu    nu      0;
+                           %nu  1-nu      0;
+                            %0    0  0.5-nu];
+%Plane Stress
+C = (E/(1-nu^2))*[1 nu 0;
+                  nu 1 0;
+                  0 0 (1-nu)/2];
+
 
 %% Definiciones
 nDofNod = 2;                    % grados de libertad por nodo
@@ -35,23 +68,67 @@ Meshplot(elementos,nodos,bc,'k',1)
 
 %% Cargas
 R = zeros(nNod,nDofNod);        % Vector de cargas
+switch TestType
+    case 'Sigma_x' %sigma x constante
+        S=1;
+        if strcmp(eleType,'Q4')
+            R(1,1)=-1/2;
+            R(2,1)=1/2;
+            R(3,1)=1/2;
+            R(4,1)=-1/2;
+        else
+            R(1,1) = -1/6;
+            R(8,1) = -2/3;
+            R(4,1) = -1/6;
+            R(2,1) = 1/6;
+            R(6,1) = 2/3;
+            R(3,1) = 1/6;
+        end
+        
+    case 'Sigma_y' %sigma y constante
+        S=2;
+        if strcmp(eleType,'Q4')
+            R(1,2)=-1/2;
+            R(2,2)=-1/2;
+            R(3,2)=1/2;
+            R(4,2)=1/2;
+        else
+            R(1,2) = -1/6;
+            R(5,2) = -2/3;
+            R(2,2) = -1/6;
+            R(3,2) = 1/6;
+            R(7,2) = 2/3;
+            R(4,2) = 1/6;
+        end
+        
+    case 'Tau_xy' %corte xy constante
+        S=3;
+        if strcmp(eleType,'Q4')
+            R(1,1)=1/2;
+            R(1,2)=1/2;
+            R(2,1)=1/2;
+            R(2,2)=-1/2;
+            R(3,1)=-1/2;
+            R(3,2)=-1/2;
+            R(4,1)=-1/2;
+            R(4,2)=1/2;
+        else
+            R(1,1)=1/6;
+            R(1,2)=1/6;
+            R(5,1)=2/3;
+            R(2,1)=1/6;
+            R(2,2)=-1/6;
+            R(6,2)=-2/3;
+            R(3,1)=-1/6;
+            R(3,2)=-1/6;
+            R(7,1)=-2/3;
+            R(4,1)=-1/6;
+            R(4,2)=-1/6;
+            R(8,2)=-2/3;
+        end
+end
 
-%% CASO TAU_XY
-%busco tauxy=2 unitario
-S=3;
-R(1,1)=1/6;%Q8 loading
-R(1,2)=1/6;
-R(5,1)=2/3;
-R(2,1)=1/6; 
-R(2,2)=-1/6;
-R(6,2)=-2/3;
-R(3,1)=-1/6;
-R(3,2)=-1/6;
-R(7,1)=-2/3;
-R(4,1)=-1/6;
-R(4,2)=-1/6;
-R(8,2)=-2/3;
-R=R*2;
+
 %% Puntos de Gauss
 rsInt = 3*ones(1,2); %2 puntos de gauss. Recibe cuantos 
 [wpg, upg, npg] = gauss(rsInt);
@@ -119,15 +196,31 @@ reacciones(isFixed) = Rv;
 reacciones = (reshape(reacciones,nDofNod,[]))';
 
 %% Recuperación de tensiones en los nodos
-uNod = [-1 -1
-         1 -1
-         1  1
-        -1  1
-         0 -1
-         1  0
-         0  1
-        -1  0];%Q8 uNod
-
+if strcmp(eleType,'Q4')
+    uNod = [-1 -1
+             1 -1
+             1  1
+            -1  1];
+elseif strcmp(eleType,'Q8')
+    uNod = [-1 -1
+             1 -1
+             1  1
+            -1  1
+             0 -1
+             1  0
+             0  1
+            -1  0];
+elseif strcmp(eleType,'Q9')    
+    uNod = [-1 -1
+             1 -1
+             1  1
+            -1  1
+             0 -1
+             1  0
+             0  1
+            -1  0
+             0  0];
+end
 stress = zeros(nNodEle,3,nel);
 for iele = 1:nel
     nodesEle = nodos(elementos(iele,:),:);

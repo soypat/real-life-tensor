@@ -2,7 +2,7 @@
 % clear; close all; clc
 % clear
 %% Obtención de funciones de forma
-syms x y real
+syms x y real %Q5
 X = [1 x y x^2 x*y];
 A = [1 -1 -1  1  1
      1  1 -1  1 -1
@@ -10,9 +10,7 @@ A = [1 -1 -1  1  1
      1 -1  1  1 -1
      1  0  0  0 0];  
 N = X/A;
-dNx = diff(N,x);
-dNy = diff(N,y);
-dN = [dNx; dNy];
+dN = [diff(N,x); diff(N,y)];
 sum(N);  % == 1
 sum(dN,2); % == 0
 
