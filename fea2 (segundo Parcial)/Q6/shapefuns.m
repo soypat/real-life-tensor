@@ -111,7 +111,8 @@ switch eleType
             N (1,1:2:7,igauss) = [N1 N2 N3 N4];
             N (2,2:2:8,igauss) = [N1 N2 N3 N4];
         end
-
+    case 'Q6'
+        
     case 'AHMAD4'
         N  = zeros(3,3*4,ngauss);
         Ni = zeros(1,  4,ngauss);

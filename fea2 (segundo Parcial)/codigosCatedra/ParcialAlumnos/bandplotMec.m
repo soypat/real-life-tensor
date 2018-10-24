@@ -1,4 +1,4 @@
-function bandplot(elementos,nodos,variable,lims,lineColor,nColores)
+function bandplotMec(elementos,nodos,variable,lims,lineColor,nColores)
 
 % BANDPLOT  Graficador de variables.
 % 
@@ -7,6 +7,13 @@ function bandplot(elementos,nodos,variable,lims,lineColor,nColores)
 % BANDPLOT(elementos,nodos,variable,lims,lineColor)
 % BANDPLOT(elementos,nodos,variable,lims,lineColor,nColores)
 % 
+% Numeración de los nodos de los elementos:
+%  3
+%  | \    
+%  6   5  
+%  |     \
+%  1---4---2
+%
 % Numeración de los nodos de los elementos:
 %  4---7---3
 %  |       |

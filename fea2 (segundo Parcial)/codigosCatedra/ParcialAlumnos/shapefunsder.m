@@ -3,7 +3,6 @@ function dN = shapefunsder(pointArray,eleType)
 ngauss = size(pointArray,1);
 
 switch eleType
-
     case {'Q9', 'AHMAD9'}
         dN = zeros(2,9,ngauss);
         for igauss = 1:ngauss

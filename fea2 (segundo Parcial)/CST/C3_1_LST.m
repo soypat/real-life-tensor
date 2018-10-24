@@ -16,6 +16,7 @@ A = [1 0 0 0 0 0
      1 .5 .5 .25 .25 .25
      1 0 .5 0 0 .25];
 N = X/A;
+
 dNx = diff(N,x);
 dNy = diff(N,y);
 dN = [dNx; dNy];

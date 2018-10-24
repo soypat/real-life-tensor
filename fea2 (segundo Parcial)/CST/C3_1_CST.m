@@ -6,13 +6,14 @@ nu = 0.3;
 alfa = 12e-6; % [1/C]
 t = 1; % [mm]
 
+graph=false;
 %% Shape functions CST
 syms x y b h real
 X = [1 x y];
 A = [1 0 0
      1 1 0
      1 0 1];
-N = X/A
+N = X/A;
 dNx = diff(N,x);
 dNy = diff(N,y);
 dN = [dNx; dNy];
@@ -20,7 +21,7 @@ disp(N);
 disp(dN);
 %Generados:
 N =@(x,y) [ 1 - y - x, x, y];
-dN = [ -1, 1, 0; -1, 0, 1];
+dN = [ -1, 1, 0; -1, 0, 1]; %Derivadas constantes
 %% Nodos y elementos
 nod = [0 0
        10 0
@@ -39,7 +40,7 @@ elem = [1 2 4
         5 8 7];
 nelem = size(elem,1);
 nnodelem = size(elem,2);
-% meshplot(elem,nod,'b')
+% Meshplot(elem,nod,'b')
 % hold on
 %% DOF
 ndofnod = 2;
@@ -66,19 +67,24 @@ C = E/(1 - nu^2)*[ 1.0      nu        0.0
 
 %% Matriz de rigidez
 K = zeros(doftot);
+A=0;
 for e = 1:nelem
     Ke = zeros(ndofnod*nnodelem);
     nodelem = nod(elem(e,:),:);
+    
+    for ipg=1:npg
     jac = dN*nodelem;
     dNxy = jac\dN;
-
+    
     B = zeros(size(C,2),ndofnod*nnodelem);
     B(1,1:2:5) = dNxy(1,:);
     B(2,2:2:6) = dNxy(2,:);
     B(3,1:2:5) = dNxy(2,:);
     B(3,2:2:6) = dNxy(1,:); 
-
+    A=wpg(ipg)*det(jac)/2+A;
     Ke = Ke + B'*C*B*det(jac)*t;
+    
+    end
     eleDofs = dof(elem(e,:),:);
     eleDofs = reshape(eleDofs',[],1);
     K(eleDofs,eleDofs) = K(eleDofs,eleDofs) + Ke;
@@ -128,10 +134,11 @@ D = (reshape(D,ndofnod,[]))';
 nodePosition = nod + D(:,1:2);
 
 %Gráfico
+if graph==true
 bandplot(elem,nodePosition,stress(:,:,1),[],'k');
-meshplot(elem,nod,'b')
+Meshplot(elem,nod,bc,'k',1)
 
-
+end
 
 
 

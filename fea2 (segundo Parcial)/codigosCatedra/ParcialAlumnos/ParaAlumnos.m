@@ -1,21 +1,30 @@
-%Q8, tau_xy
-TestType ='Tau_xy';% 'Sigma_y' ; % 'Sigma_y' ; % 'Sigma_x' ; %
-eleType = 'Q8';% 
+clear
+clc
+close all
+
+eleType = 'Q4';% 'Q4', 'Q9'
 escala=1; %Escala desplazamientos
 %% Discretizacion
-nodos = [1 0;2 0;0 2;0 1;1.5 0;2*sind(45) 2*sind(45);0 1.5;sind(45) sind(45)];
-elementos = 1:8;
 
-%% Propiedades del Material {plain stress}
+    nodos = [ 0      0
+              10     0
+              10     10
+              0      10];
+elementos = 1:4;   % Matriz de conectividades - ajustar de acuerdo a número de nodos por elemento
+
+%% Propiedades del Material
 E=1;
 nu=0.3;
-% C = (E/(1-nu^2))*[1 nu 0;
-%                   nu 1 0;
-%                   0 0 (1-nu)/2];
-%%Plane Strain
-C = (E/((1+nu)*(1-2*nu)))*[1-nu    nu      0;
-                           nu  1-nu      0;
-                            0    0  0.5-nu];
+t=1; %espesor
+%Plane Strain
+%C = (E/((1+nu)*(1-2*nu)))*[1-nu    nu      0;
+                           %nu  1-nu      0;
+                            %0    0  0.5-nu];
+%Plane Stress
+C = (E/(1-nu^2))*[1 nu 0;
+                  nu 1 0;
+                  0 0 (1-nu)/2];
+
 
 %% Definiciones
 nDofNod = 2;                    % grados de libertad por nodo
@@ -25,60 +34,27 @@ nNodEle = size(elementos,2);     % nodos por elemento
 nDofTot = nDofNod*nNod;         % grados de libertad
 nDims = size(nodos,2);          % dimensiones del problema
 
-%% Condiciones de borde
-bc = false(nNod,nDofNod);       % Matriz de condiciones de borde
-bc(1,1:2) = true;
-bc(2,2) = true;
-%%
-figure(1)
-Meshplot(elementos,nodos,bc,'k',1)
-
-%% Cargas
-R = zeros(nNod,nDofNod);        % Vector de cargas
-
-%% CASO TAU_XY
-%busco tauxy=2 unitario
-S=3;
-R(1,1)=1/6;%Q8 loading
-R(1,2)=1/6;
-R(5,1)=2/3;
-R(2,1)=1/6; 
-R(2,2)=-1/6;
-R(6,2)=-2/3;
-R(3,1)=-1/6;
-R(3,2)=-1/6;
-R(7,1)=-2/3;
-R(4,1)=-1/6;
-R(4,2)=-1/6;
-R(8,2)=-2/3;
-R=R*2;
 %% Puntos de Gauss
-rsInt = 3*ones(1,2); %2 puntos de gauss. Recibe cuantos 
+rsInt = 3*ones(1,2);
 [wpg, upg, npg] = gauss(rsInt);
 
 %% Matriz de rigidez
 K = zeros(nDofTot);
-A = 0; %
-jmin = 1E10;%guardamos j min for our information
 for iele = 1:nel
     Ke = zeros(nDofNod*nNodEle);
     nodesEle = nodos(elementos(iele,:),:);
-    for ipg = 1:npg %ultimo punto de gauss
+    for ipg = 1:npg
         % Punto de Gauss
         ksi = upg(ipg,1);
         eta = upg(ipg,2);
         
         % Funciones de forma respecto de ksi, eta
         N = shapefuns([ksi eta],eleType);
-        %shapefuns([-1 1],eleType); nos da [0 0 0 1] porque estamos parado
-        %en el lado superior izquierdo del elemento
+        
         % Derivadas de las funciones de forma respecto de ksi, eta
         dN = shapefunsder([ksi eta],eleType);
-        %sum(dN,2) siempre da uno
         % Derivadas de x,y, respecto de ksi, eta
-        jac = dN*nodesEle; %Mucho lio para UN punto del elemento
-        %dN es el mismo para el elemento, lo que cambia es nodesEle para
-        %obtener el jabociano
+        jac = dN*nodesEle;
         % Derivadas de las funciones de forma respecto de x,y.
         dNxy = jac\dN;          % dNxy = inv(jac)*dN
         
@@ -89,16 +65,23 @@ for iele = 1:nel
         B(3,2:2:nDofNod*nNodEle) = dNxy(1,:);
         
         Djac = det(jac);
-        Ke = Ke + B'*C*B*wpg(ipg)*Djac;
-        A = A + wpg(ipg)*Djac;
-        if Djac < jmin
-            jmin = Djac;
-        end
+        Ke = Ke + B'*C*B*wpg(ipg)*Djac*t;
     end
     eleDofs = node2dof(elementos(iele,:),nDofNod);
     K(eleDofs,eleDofs) = K(eleDofs,eleDofs) + Ke;
 end
 
+%% Condiciones de borde
+bc = false(nNod,nDofNod);       % Matriz de condiciones de borde
+bc(1,1:2) = true;
+bc(2,2) = true;
+%%
+figure(1)
+% MeshplotTrigMec(elementos,nodos,bc,'k',1)
+
+%% Cargas
+R = zeros(nNod,nDofNod);        % Vector de cargas
+R(4,1)=500;
 % Reduccion Matriz
 isFixed = reshape(bc',[],1);
 isFree = ~isFixed;
@@ -119,15 +102,31 @@ reacciones(isFixed) = Rv;
 reacciones = (reshape(reacciones,nDofNod,[]))';
 
 %% Recuperación de tensiones en los nodos
-uNod = [-1 -1
-         1 -1
-         1  1
-        -1  1
-         0 -1
-         1  0
-         0  1
-        -1  0];%Q8 uNod
-
+if strcmp(eleType,'Q4')
+    uNod = [-1 -1
+             1 -1
+             1  1
+            -1  1];
+elseif strcmp(eleType,'Q8')
+    uNod = [-1 -1
+             1 -1
+             1  1
+            -1  1
+             0 -1
+             1  0
+             0  1
+            -1  0];
+elseif strcmp(eleType,'Q9')    
+    uNod = [-1 -1
+             1 -1
+             1  1
+            -1  1
+             0 -1
+             1  0
+             0  1
+            -1  0
+             0  0];
+end
 stress = zeros(nNodEle,3,nel);
 for iele = 1:nel
     nodesEle = nodos(elementos(iele,:),:);
@@ -149,8 +148,7 @@ for iele = 1:nel
         B(3,2:2:nDofNod*nNodEle) = dNxy(1,:);
         
         eleDofs = node2dof(elementos(iele,:),nDofNod);
-        stress(inode,:,iele) = C*B*D(eleDofs);% Aca esta resuelto el problem
-        %C*B es sigma, por los desplazaments
+        stress(inode,:,iele) = C*B*D(eleDofs);
     end
 end
     
@@ -160,4 +158,5 @@ figure(1)
 Meshplot(elementos,nodePosition,bc,'r',0)
 %% Gráfico
 figure(2)
-bandplot(elementos,nodePosition,stress(:,S,:)',[],'k');
+S=1;
+bandplot(elementos,nodePosition,stress(:,3,:)',[],'k');
