@@ -19,7 +19,7 @@ d2T= diff(T,x,2);
 cond1= T(0)==T0;
 cond2= dT(L)==0;
 
-ode = 0 == k*d2T + qvol*A + pi*D*hamb*(Tamb-T);
+ode = 0 == k*d2T + qvol + pi*D*hamb*(Tamb-T);
 
 funcion_simbolica=dsolve(ode,[cond1,cond2]);
 
