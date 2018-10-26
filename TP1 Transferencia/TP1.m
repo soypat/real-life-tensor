@@ -12,8 +12,9 @@ T0=0;
 Tamb=30;
 hamb=10; %W/m^2K
 %% Begin problem
-Nx=6; %cantidad de elementos (2 medios volumenes y Nx-2 completos )
+Nx=1000; %cantidad de elementos (2 medios volumenes y Nx-2 completos )
 dx=L/(Nx-1); %long. elementos
+
 nodos=0:dx:L;
 C=zeros(Nx);
 Q=zeros(Nx,1);
@@ -38,11 +39,42 @@ T=C\Q;
 figure(1)
 hold on
 x_sol=0:0.05:1;
+
+Texact=solucion_analitica1(0:dx:1)';
+error_max=max(abs(T(2:end)-Texact(2:end))./Texact(2:end))*100;
+figure(1)
+subplot(2,1,1);
 plot(x_sol,solucion_analitica1(x_sol),'b')
+hold on
 plot(nodos,T,'k-.*')
 legend('analitic','finite volume')
+text(.5,15,sprintf('Error Relativo = %f%%',error_max))
 hold off
 
 title('Perfil de Temperaturas')
 ylabel('Temperatura')
 xlabel('Posicion')
+
+%% Analisis de Conservation of Energy
+Qgen=qvol*Area*dx*ones(Nx,1);
+Qgen(1)=Qgen(1)/2;
+Qgen(Nx)=Qgen(Nx)/2;
+
+
+Qeast=0;
+Qwest=-k*Area*(T(2)-T(1))/(dx);
+
+Qconv=zeros(Nx,1);
+Qconv(1)=hamb*D*pi*dx*(Tamb-T(1))/2;
+Qconv(Nx)=hamb*D*pi*dx*(Tamb-T(Nx))/2;
+for i=2:Nx-1
+    Qconv(i)=hamb*D*pi*dx*(Tamb-T(i));
+end
+subplot(2,1,2);
+plot(nodos,Qconv)
+title('Calor convectado sobre barra')
+ylabel('Calor Convectado [W/m]')
+xlabel('Posicion [m]')
+dQ=Qeast+sum(Qconv)+sum(Qgen)+Qwest;
+% texty=sprintf('Calor almacenado = %0.3f',dQ);
+text(.5,max(Qconv)/2,sprintf('Calor almacenado = %0.3f W',dQ))
