@@ -2,8 +2,8 @@ k=1;
 L=0.5;
 b=1;
 
-Nx=30; %Nodos en los que dividimos el problema
-Ny=30;
+Nx=20; %Nodos en los que dividimos el problema
+Ny=20;
 
 dx=L/(Nx-1);
 dy=b/(Ny-1);
@@ -43,9 +43,15 @@ end
 
 T=C\Q;
 Tgrid=reshape(T,Ny,Nx);
-
+Texact=solucion_analitica2(x,y);
+Texact=flipud(Texact)
 % bar3(y,Tgrid)
-surf(x,y,Tgrid)
+subplot(2,1,1)
+contourf(x,y,Tgrid)
+title('Solución Obtenida')
+subplot(2,1,2)
+contourf(x,y,Texact)
+title('Solución Exacta')
 
 
 
