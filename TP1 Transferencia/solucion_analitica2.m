@@ -9,3 +9,4 @@ Tm=20;%C
 b=1;%m  
     
 Z=Tm*sinh(pi*Y/L)/sinh(pi*b/L).*sin(pi*X/L);
+Z=flipud(Z);

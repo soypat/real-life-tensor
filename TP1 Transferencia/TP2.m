@@ -2,8 +2,8 @@ k=1;
 L=0.5;
 b=1;
 
-Nx=20; %Nodos en los que dividimos el problema
-Ny=20;
+Nx=5; %Nodos en los que dividimos el problema
+Ny=5;
 
 dx=L/(Nx-1);
 dy=b/(Ny-1);
@@ -44,7 +44,7 @@ end
 T=C\Q;
 Tgrid=reshape(T,Ny,Nx);
 Texact=solucion_analitica2(x,y);
-Texact=flipud(Texact)
+
 % bar3(y,Tgrid)
 subplot(2,1,1)
 contourf(x,y,Tgrid)
