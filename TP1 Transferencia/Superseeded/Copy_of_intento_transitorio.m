@@ -15,7 +15,6 @@ xmid = 0.5*(x(1:Nx) + x(2:Nx+1)); %Volume midpoints
 % Initial conditions: Temperature along bar (T=25 constant)
 % Border conditions: T(1)=0
 %                    T(Nx-1)= T(Nx) (Adiabatic condition)
-%                    
 %% Bar dimensions
 A=0.1; %m^2 Area
 % L=L; %Meters, declared above
@@ -59,16 +58,14 @@ dS=pi*D*dx; %Surface differential (of bar exterior for convection calculation)
 Q=zeros(Nx,1);
 while (t<tfinal)
     Tbc = [T0; T ; T(end)]; %
-    for i = 1:Nx
-        dTdxwest = Tbc(i+1)-Tbc(i);
-        dTdxeast = Tbc(i+1)-Tbc(i+2);
-        Qwesteast= -k*A*(dTdxwest+dTdxeast);%Frame of reference taken on the volume
-        
+    for i = 2:Nx
+        dTdxwest = Tbc(i)-Tbc(i-1);
+        dTdxeast = Tbc(i+1)-Tbc(i);
+        Qwesteast= -k*A*(dTdxeast-dTdxwest);%Frame of reference taken on the volume
         % Generated
         Qgen=qgen*A*dx;
         % Convection
-        Qnorth=hglobal*dS*(Tamb-Tbc(i+1));
-        
+        Qnorth=hamb*dS*(Tamb-Tbc(i));
         Q(i)=Qwesteast+Qgen+Qnorth;
     end
     t=t+dt;
@@ -80,12 +77,13 @@ while (t<tfinal)
         cla
         continue
     end
-    %Plot current solution
-     stairs(x,[T]);
-     axis([0, 1, min(T0,TN), max(T0,TN)]);
+end
+%Plot current solution
+     stairs(x,[T0;T]);
+     axis([0, 1, min(T0,TN)-1, max(T0,TN)+1]);
      grid on;
      drawnow;
-end
+
 hold on
 plot(x,solucion_analitica1(x))
 
