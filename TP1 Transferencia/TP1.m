@@ -12,7 +12,7 @@ T0=0;
 Tamb=30;
 hamb=10; %W/m^2K
 %% Begin problem
-Nx=1000; %cantidad de elementos (2 medios volumenes y Nx-2 completos )
+Nx=10; %cantidad de elementos (2 medios volumenes y Nx-2 completos )
 dx=L/(Nx-1); %long. elementos
 
 nodos=0:dx:L;
@@ -61,7 +61,7 @@ Qgen(1)=Qgen(1)/2;
 Qgen(Nx)=Qgen(Nx)/2;
 
 
-Qeast=0;
+Qeast=k*Area*(T(end)-T(end-1))/dx;
 Qwest=-k*Area*(T(2)-T(1))/(dx);
 
 Qconv=zeros(Nx,1);

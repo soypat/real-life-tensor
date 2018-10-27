@@ -1,9 +1,9 @@
 k=1;
-L=0.5;
+L=.5;
 b=1;
 
-Nx=5; %Nodos en los que dividimos el problema
-Ny=5;
+Nx=10; %Nodos en los que dividimos el problema
+Ny=10;
 
 dx=L/(Nx-1);
 dy=b/(Ny-1);
@@ -12,7 +12,7 @@ y=0:dy:b;
 
 doftot=Nx*Ny;
 DOF=reshape(1:doftot,Ny,Nx);
-C=zeros(doftot);
+C=sparse(doftot);
 Q=zeros(doftot,1);
 T=zeros(doftot,1);
 
@@ -33,11 +33,11 @@ Q(nwall)=Tnwall;
 
 for j = 2:Nx-1
     for i= 2:Ny-1
-        C(DOF(i,j),DOF(i,j))=C(DOF(i,j),DOF(i,j))-2/dx^2-2/dy^2;
-        C(DOF(i,j),DOF(i+1,j))=C(DOF(i,j),DOF(i+1,j))+1/dx^2;
-        C(DOF(i,j),DOF(i-1,j))=C(DOF(i,j),DOF(i-1,j))+1/dx^2;
-        C(DOF(i,j),DOF(i,j+1))=C(DOF(i,j),DOF(i,j+1))+1/dy^2;
-        C(DOF(i,j),DOF(i,j-1))=C(DOF(i,j),DOF(i,j-1))+1/dy^2;        
+        C(DOF(i,j),DOF(i,j))=C(DOF(i,j),DOF(i,j))-2*(1/dx^2+1/dy^2);
+        C(DOF(i,j),DOF(i+1,j))=C(DOF(i,j),DOF(i+1,j))+1/dy^2;
+        C(DOF(i,j),DOF(i-1,j))=C(DOF(i,j),DOF(i-1,j))+1/dy^2;
+        C(DOF(i,j),DOF(i,j+1))=C(DOF(i,j),DOF(i,j+1))+1/dx^2;
+        C(DOF(i,j),DOF(i,j-1))=C(DOF(i,j),DOF(i,j-1))+1/dx^2;        
     end
 end
 
@@ -47,18 +47,54 @@ Texact=solucion_analitica2(x,y);
 
 % bar3(y,Tgrid)
 subplot(2,1,1)
-contourf(x,y,Tgrid)
+% contourf(x,y,Tgrid)
+% title('Solución Obtenida')
+% subplot(2,1,2)
+% contourf(x,y,Texact)
+% title('Solución Exacta')
+subplot(1,2,1)
+surf(x,y,Tgrid,'edgecolor','none')
 title('Solución Obtenida')
-subplot(2,1,2)
-contourf(x,y,Texact)
+ view(0,90)
+subplot(1,2,2)
+surf(x,y,Texact,'edgecolor','none')
+ view(0,90)
 title('Solución Exacta')
 
+%% Conservacion de energía
+% Qnwall=zeros(length(nwall),1)
+% for i=nwall(2:end-1)
+%     T(DOF()
+
+Qewall= zeros(length(ewall),1);
+% Tewall = zeros(length(ewall),1);
+Tewall = Tgrid(2:end-1,end-1);
+Twwall = Tgrid(2:end-1,2);
+Tnwall = Tgrid(2,2:end-1);
+Tswall = Tgrid(end-1,2:end-1);
 
 
 
+Qwest= -dy*Twwall/dx;
+Qeast= -dy*Tewall/dx;
+Qsouth= -dx*Tswall/dy;
+Qnorth= -dx/dy*(Tnwall-Tgrid(1,2:end-1));
+sum(Qwest)
+sum(Qnorth)
+sum(Qeast)
+sum(Qsouth)
+dQ=sum(Qwest)+sum(Qnorth)+sum(Qeast)+sum(Qsouth)
+% Tnwall = Tgrud
 
+%% dQ exacta
 
+Tewalle = Texact(2:end-1,end-1);
+Twwalle = Texact(2:end-1,2);
+Tnwalle = Texact(2,2:end-1);
+Tswalle = Texact(end-1,2:end-1);
+Qweste= -dy*Twwalle/dx;
+Qeaste= -dy*Tewalle/dx;
+Qsouthe= -dx*Tswalle/dy;
+Qnorthe= -dx/dy*(Tnwalle-Texact(1,2:end-1));
 
-
-
-
+dQe=sum(Qweste)+sum(Qnorthe)+sum(Qeaste)+sum(Qsouthe)
