@@ -2,8 +2,8 @@ k=1;
 L=.5;
 b=1;
 
-Nx=10; %Nodos en los que dividimos el problema
-Ny=10;
+Nx=100; %Nodos en los que dividimos el problema
+Ny=100;
 
 dx=L/(Nx-1);
 dy=b/(Ny-1);
@@ -53,14 +53,18 @@ subplot(2,1,1)
 % contourf(x,y,Texact)
 % title('Solución Exacta')
 subplot(1,2,1)
-surf(x,y,Tgrid,'edgecolor','none')
+surf1=surf(x,y,Tgrid,'edgecolor','none');
 title('Solución Obtenida')
  view(0,90)
+ daspect([1 1 1])
 subplot(1,2,2)
-surf(x,y,Texact,'edgecolor','none')
+surf2=surf(x,y,Texact,'edgecolor','none');
  view(0,90)
+ daspect([1 1 1])
 title('Solución Exacta')
 
+
+surf2.FaceColor='interp';
 %% Conservacion de energía
 % Qnwall=zeros(length(nwall),1)
 % for i=nwall(2:end-1)
