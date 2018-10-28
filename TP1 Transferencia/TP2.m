@@ -1,12 +1,11 @@
-k=1;
 L=.5;
 b=1;
-
+close all
 Nx=4; %Nodos en los que dividimos el problema
 Ny=4;
 iterants=[fibonacci(7) fibonacci(8) fibonacci(9) fibonacci(10) fibonacci(11) fibonacci(12)];
 err=zeros(length(iterants),1);
-k=0;
+k=0; %contador (no es la conductividad)
 for N=iterants
 k=k+1;
 Nx=N;
@@ -54,11 +53,13 @@ end
 
 % bar3(y,Tgrid)
 % subplot(3,1,1)
-% contourf(x,y,Tgrid)
-% title('Solución Obtenida')
+figure(1)
+contourf(x,y,Tgrid,'ShowText','on')
+title('Solución obtenida (Isotermas)')
 % subplot(2,1,2)
 % contourf(x,y,Texact)
 % title('Solución Exacta')
+figure(2)
 subplot(1,3,1)
 surf1=surf(x,y,Tgrid,'edgecolor','none');
 title('Solución Obtenida')
@@ -97,7 +98,7 @@ sum(Qwest)
 sum(Qnorth)
 sum(Qeast)
 sum(Qsouth)
-dQ=sum(Qwest)+sum(Qnorth)+sum(Qeast)+sum(Qsouth)
+dQ=sum(Qwest)+sum(Qnorth)+sum(Qeast)+sum(Qsouth);
 % Tnwall = Tgrud
 
 %% dQ exacta
@@ -111,4 +112,4 @@ Qeaste= -dy*Tewalle/dx;
 Qsouthe= -dx*Tswalle/dy;
 Qnorthe= -dx/dy*(Tnwalle-Texact(1,2:end-1));
 
-dQe=sum(Qweste)+sum(Qnorthe)+sum(Qeaste)+sum(Qsouthe)
+dQe=sum(Qweste)+sum(Qnorthe)+sum(Qeaste)+sum(Qsouthe);

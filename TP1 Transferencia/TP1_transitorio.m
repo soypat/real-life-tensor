@@ -72,8 +72,8 @@ while (t<tfinal) || Tdifference>permissible_Error
         Qgen=qgen*A*dx;
         % Convection
         Qnorth=hamb*pi*D*dx*(Tamb-Tbc(i+1));
-        Qnorths(i)=Qnorth
-        Qwe(i)=Qwesteast
+        Qnorths(i)=Qnorth;
+        Qwe(i)=Qwesteast;
         Q(i)=Qwesteast+Qgen+Qnorth;
     end
     t=t+dt;
@@ -90,7 +90,7 @@ while (t<tfinal) || Tdifference>permissible_Error
     end
     %Plot current solution
      stairs(x-dx/2,[T0;T]);
-     axis([0, 1, min(T0,TN), max(T0,TN)]);
+     axis([0, 1, min(T0,TN)-1, max(T0,TN)+1]);
      grid on;
      drawnow;
 end
