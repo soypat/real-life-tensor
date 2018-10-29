@@ -48,7 +48,7 @@ plot(x_sol,solucion_analitica1(x_sol),'b')
 hold on
 plot(nodos,T,'k-.*')
 legend('analitic','finite volume')
-text(.5,15,sprintf('Error Relativo = %f%%',error_max))
+text(.2,15,sprintf('Error Relativo = %f%%',error_max))
 hold off
 
 title('Perfil de Temperaturas')
@@ -70,6 +70,7 @@ Qconv(Nx)=hamb*D*pi*dx*(Tamb-T(Nx))/2;
 for i=2:Nx-1
     Qconv(i)=hamb*D*pi*dx*(Tamb-T(i));
 end
+
 subplot(2,1,2);
 plot(nodos,Qconv)
 title('Calor convectado sobre barra')
@@ -77,4 +78,4 @@ ylabel('Calor Convectado [W/m]')
 xlabel('Posicion [m]')
 dQ=Qeast+sum(Qconv)+sum(Qgen)+Qwest;
 % texty=sprintf('Calor almacenado = %0.3f',dQ);
-text(.5,max(Qconv)/2,sprintf('Calor almacenado = %0.3f W',dQ))
+text(.22,max(Qconv)/2,sprintf('Calor almacenado = %0.3f W',dQ))

@@ -3,10 +3,11 @@ b=1;
 close all
 Nx=4; %Nodos en los que dividimos el problema
 Ny=4;
-iterants=[fibonacci(7) fibonacci(8) fibonacci(9) fibonacci(10) fibonacci(11) fibonacci(12)];
+iterants=[fibonacci(7) fibonacci(8) fibonacci(9) fibonacci(10) fibonacci(11) fibonacci(12) 25];
 err=zeros(length(iterants),1);
 k=0; %contador (no es la conductividad)
 for N=iterants
+
 k=k+1;
 Nx=N;
 Ny=N;
@@ -52,26 +53,32 @@ err(k)=(numel(Tgrid)^-1)*sum(sum((Tgrid-Texact).^2));
 end
 
 % bar3(y,Tgrid)
-% subplot(3,1,1)
 figure(1)
+subplot(1,5,1)
+volumenes
+daspect([1 1 1])
+title('Modelo volúmenes finitos')
+subplot(1,5,2)
 contourf(x,y,Tgrid,'ShowText','on')
+daspect([1 1 1])
 title('Solución obtenida (Isotermas)')
 % subplot(2,1,2)
 % contourf(x,y,Texact)
 % title('Solución Exacta')
-figure(2)
-subplot(1,3,1)
+
+subplot(1,5,3)
 surf1=surf(x,y,Tgrid,'edgecolor','none');
 title('Solución Obtenida')
  view(0,90)
  daspect([1 1 1])
-subplot(1,3,2)
+subplot(1,5,4)
 surf2=surf(x,y,Texact,'edgecolor','none');
  view(0,90)
  daspect([1 1 1])
 title('Solución Exacta')
-subplot(1,3,3);
-loglog(iterants.^2,err)
+subplot(1,5,5);
+loglog(iterants(1:end-1).^2,err(1:end-1))
+
 title('Error cuadratico medio (Escala logarítmica)')
 xlabel('Cantidad de volúmenes');
 ylabel('Error')
