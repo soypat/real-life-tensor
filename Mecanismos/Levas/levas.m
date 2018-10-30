@@ -13,7 +13,7 @@ B = [35;0;0;0;0];                       %valores de (s,v,s,v,a respectivamente)
 C = linsolve(A,B);                      %Constantes(c3,c4,c5,c6,c7)
 
 
-x = 0:0.01:1;                           %x = tita/B1+B2
+x = 0:0.005:1;                           %x = tita/B1+B2
 
 B1 = 5/12 * pi;
 B2 = pi - B1;
@@ -34,7 +34,8 @@ plot(x,a1);
 end
 tita=0:2*pi/(length(s)-1):2*pi;
 % tita=linspace(0,2*pi,length(s));
-Rb=50;% Ni idea, puse un radio base cualquiera
+Rb=100;% Ni idea, puse un radio base cualquiera
+Rr=28;%Radio rodillo
 R=zeros(length(tita),2);
 Rbase=zeros(length(tita),2);
 for i=1:length(tita)
@@ -43,8 +44,12 @@ for i=1:length(tita)
     rx=(Rb+s(i))*cos(ti);ry=(Rb+s(i))*sin(ti);
     R(i,1)=rx;R(i,2)=ry;
 end
+levard=levamatic(R,Rr); %Posiciones de la surpiperficie de la leva
+%% Plotting
+plot(R(:,1),R(:,2),'r');
+hold on; plot(Rbase(:,1),Rbase(:,2),'g');
+daspect([1 1 1]);
+scatter(0,0,'k','x');
+plot(levard(:,1),levard(:,2),'b');%Perfil de leva
+legend('Recorrido de Rodillo','RadioBase Rodillo','Centro de eje','Perfil Leva')
 
-plot(R(:,1),R(:,2),'b');
-hold on; plot(Rbase(:,1),Rbase(:,2),'r');
-daspect([1 1 1])
-scatter(0,0,'k','x')
