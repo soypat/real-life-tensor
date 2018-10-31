@@ -73,7 +73,12 @@ Vmin = vmin*w;
 Amin = amin*(w^2);
 Jmin = jmin*(w^3);
 
-badys=[180 181]; %Los que no grafican bien
+radioBaseLeva=100;
+
+[paso_rodillo, circuloBase, circuloPrim]=rodimatic(s,20,radioBaseLeva);
+
+levard=levamatic(paso_rodillo,20);
+
 % arigraph;
 
 

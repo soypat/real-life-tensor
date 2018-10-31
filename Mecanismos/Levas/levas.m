@@ -33,21 +33,15 @@ figure(3);
 plot(x,a1);
 end
 tita=0:2*pi/(length(s)-1):2*pi;
-% tita=linspace(0,2*pi,length(s));
-Rb=100;% Ni idea, puse un radio base cualquiera
+
+radio_leva=100;% Ni idea, puse un radio base cualquiera
 Rr=28;%Radio rodillo
-R=zeros(length(tita),2);
-Rbase=zeros(length(tita),2);
-for i=1:length(tita)
-    ti=tita(i);
-    Rbase(i,1)=Rb*cos(ti);Rbase(i,2)=Rb*sin(ti);
-    rx=(Rb+s(i))*cos(ti);ry=(Rb+s(i))*sin(ti);
-    R(i,1)=rx;R(i,2)=ry;
-end
+
+[R, circ_base, circ_prim]=rodimatic(s,Rr,radio_leva);
 levard=levamatic(R,Rr); %Posiciones de la surpiperficie de la leva
 %% Plotting
 plot(R(:,1),R(:,2),'r');
-hold on; plot(Rbase(:,1),Rbase(:,2),'g');
+hold on; plot(circ_prim(:,1),circ_prim(:,2),'g');
 daspect([1 1 1]);
 scatter(0,0,'k','x');
 plot(levard(:,1),levard(:,2),'b');%Perfil de leva
