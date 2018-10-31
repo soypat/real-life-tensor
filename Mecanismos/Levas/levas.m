@@ -52,4 +52,3 @@ daspect([1 1 1]);
 scatter(0,0,'k','x');
 plot(levard(:,1),levard(:,2),'b');%Perfil de leva
 legend('Recorrido de Rodillo','RadioBase Rodillo','Centro de eje','Perfil Leva')
-
