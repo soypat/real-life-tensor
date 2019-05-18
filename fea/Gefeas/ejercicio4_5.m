@@ -35,6 +35,6 @@ be=a*ones(Ne,1);
 Sye=350e6*ones(Ne,1);
 
 graficar=true;
-vigasinteresantes=[2,3];
+vigasinteresantes=[2,3,4];
 
 G2DFEAS

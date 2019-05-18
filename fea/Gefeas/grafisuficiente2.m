@@ -44,8 +44,8 @@ for i=1:Ne %Generación de vectores [y1 y2] para plot
     M([i*2-1; i*2])=[-Fv(3),Fv(6)];
     xv([i*2-1;i*2])=[L(i) L(i+1)];
 end
-
-figure('Name','Fuerzas2')
+figure(i+1)
+% figure('Name',sprintf('Fuerzas %0.0f',i))
 
 subplot(3,1,1)
     area(xv,N,'FaceColor',colorN)

@@ -200,7 +200,8 @@ try
     if graficar
         graficapoco(nod,userelenod,eletype,Ie);
     end
-    if ~isempty(vigasinteresantes) && graficar      
+    if ~isempty(vigasinteresantes) && graficar
+        
         grafisuficiente2(Le(vigasinteresantes),forzas{vigasinteresantes})
     end
 catch
